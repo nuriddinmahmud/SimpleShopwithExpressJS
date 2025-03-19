@@ -1,14 +1,28 @@
 const OrdersItem = require("../models/ordersItem.model")
 const Orders = require("../models/orders.model")
 const Validation =  require("../validations/ordersItem.validation")
-
+const Products = require("../models/products.model")
 
 
 
 
 async function getOne(req,res, id) {
     try {
-        let data = await OrdersItem.findOne({where: {id: id}})
+        let data = await OrdersItem.findOne({
+            where: {id: id},
+            include: [
+                {   
+                    model: Orders,
+                    as: "order",
+                    attributes: ["id", "name"]
+                },
+                {
+                    model: Products,
+                    as: "product",
+                    attributes: ["id", "name"]
+                }]
+
+        })
         res.send(data)
     } catch (error) {
         res.send(error.message)
@@ -18,7 +32,20 @@ async function getOne(req,res, id) {
 async function getAll(req, res){
     try {
         if(req.query.userID){
-            let data = await OrdersItem.findAll({where: {userID: req.query.userID}})
+            let data = await OrdersItem.findAll({
+                where: {userID: req.query.userID},
+                include: [
+                {   
+                    model: Orders,
+                    as: "order",
+                    attributes: ["id", "name"]
+                },
+                {
+                    model: Products,
+                    as: "product",
+                    attributes: ["id", "name"]
+                }]
+            })
             res.send(data)
             return;
         }
@@ -31,7 +58,7 @@ async function getAll(req, res){
 
 async function post(req,res) {
     try {
-        const {error} = Validation.validate(req.body)
+        const {error} = Validation.ordersItemValidation.validate(req.body)
         if(error){
             res.send(error.message)
             return;
@@ -47,7 +74,7 @@ async function post(req,res) {
 
 async function update(req,res) {
     try {
-        const {error} = Validation.validate(req.body)
+        const {error} = Validation.ordersItemValidationUpdate.validate(req.body)
         if(error){
             res.send(error.message)
             return;

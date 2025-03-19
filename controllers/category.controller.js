@@ -1,35 +1,9 @@
 const Category = require("../models/category.model")
-const {Router} = require("express")
 const Validation =  require("../validations/category.validation")
-const app = Router()
-const jwt = require("jsonwebtoken")
-
-
-async function middle(roles) {
-    const middleware = async (req, res, next) => {
-        const token = req.header("Authorization")?.split(" ")[1]
-        if(!token){
-            res.status(401).send("Token not found")
-            return;
-        }
-        const data = jwt.verify(token, "secret") // token secret kodi
-        req.userID = data.userID
-        if(!data){
-            res.status(401).send("Token not found")
-            return;
-        }
-        if(!roles.includes(data.role)){
-            res.send("Not allowed")
-            return;
-        }
-        next()
-    }
-
-}
 
 
 
-app.get("/", async (req, res) => {
+async function getAll(req,res) {
     try {
         if(req.query.name){
             const categories = await Category.findAll({where: {name: req.query.name}})
@@ -43,18 +17,26 @@ app.get("/", async (req, res) => {
         res.send(category)
     } catch (error) {
         res.status(404).send(error.message)
-    }
-})
+    }    
+}
 
+async function getOne(req,res) {
+    try {
+        const categories = await Category.findOne(req.params.id)
+        res.send(categories)
+    } catch (error) {
+        res.status(404).send(error.message)
+    }    
+}
 
-app.post("/", async (req, res) => {
+async function post(req,res) {
     try {
         const cat = await Category.findOne({where: {name: req.body.name}})
         if(cat){
             res.status(400).send("category already exists")
             return;
         }
-        const {error} = Validation.validate(req.body)
+        const {error} = Validation.categoryValidation.validate(req.body)
         if(error){
             res.send(error.message)
             return;
@@ -64,12 +46,12 @@ app.post("/", async (req, res) => {
     } catch (error) {
         res.send(error.message)
     }
-})
+}
 
 
-app.patch("/:id", async (req, res) => {
+async function update(req,res) {
     try {
-        const {error} = Validation.validate(req.body)
+        const {error} = Validation.categoryValidationUpdate.validate(req.body)
         if(error){
             res.send(error.message)
             return;
@@ -85,10 +67,10 @@ app.patch("/:id", async (req, res) => {
     } catch (error) {
         res.send(error.message)
     }
-})
+}
 
 
-app.delete("/:id", async (req, res) => {
+async function remove(req,res) {
     try {
         let id = req.params.id
         const category = await Category.findByPk(id)
@@ -101,14 +83,11 @@ app.delete("/:id", async (req, res) => {
     } catch (error) {
         res.send(error.message)
     }
-})
+    
+}
 
 
 
 
 
-
-
-
-
-module.exports = app
+module.exports = {getAll, getOne, update, remove, post}

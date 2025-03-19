@@ -4,4 +4,8 @@ const ordersValidation = Joi.object({
     userID: Joi.number().min(1).required(),
 })
 
-module.exports = ordersValidation
+const ordersValidationUpdate = Joi.object({
+    userID: Joi.number().min(1).optional(),
+})
+
+module.exports = {ordersValidation, ordersValidationUpdate}

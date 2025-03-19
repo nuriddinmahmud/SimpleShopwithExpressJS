@@ -6,4 +6,10 @@ const ordersItemValidation = Joi.object({
     productID: Joi.number().required().min(1)
 })
 
-module.exports = ordersItemValidation
+const ordersItemValidationUpdate = Joi.object({
+    count: Joi.number().min(1).max(99).optional(),
+    orderID: Joi.number().min(1).optional(),
+    productID: Joi.number().min(1).optional()
+})
+
+module.exports = {ordersItemValidation, ordersItemValidationUpdate}
