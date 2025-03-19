@@ -1,6 +1,6 @@
-const OrdersItem = require("../models/ordersItem.model");
-const Orders = require("../models/orders.model");
-const Validation = require("../validations/ordersItem.validation");
+const OrdersItem = require("../models/ordersItem.model.js");
+const Orders = require("../models/orders.model.js");
+const ordersItemValidation = require("../validations/ordersItem.validation");
 
 async function getOne(req, res, id) {
   try {
@@ -29,7 +29,7 @@ async function getAll(req, res) {
 
 async function post(req, res) {
   try {
-    const { error } = Validation.validate(req.body);
+    const { error } = ordersItemValidation.validate(req.body);
     if (error) {
       res.send(error.message);
       return;
@@ -49,7 +49,7 @@ async function post(req, res) {
 
 async function update(req, res) {
   try {
-    const { error } = Validation.validate(req.body);
+    const { error } = ordersItemValidation.validate(req.body);
     if (error) {
       res.send(error.message);
       return;

@@ -1,10 +1,11 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const Sequelize = require('sequelize');
+// const mainRouter = require("./routes/main.routes.js")
 // const swaggerJSDoc = require("swagger-jsdoc");
 // const swaggerUi = require("swagger-ui-express");
-// const mainRoute = require("./routes/index.js");
-const { sequelize } = require('./config/database.js');
+const  sequelize  = require('./config/database.js');
 
 dotenv.config();
 const PORT = process.env.PORT || 3006;
@@ -19,6 +20,8 @@ app.use(
   })
 );
 
+// app.use('/api', mainRouter);
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Salom
 
 async function shop() {
