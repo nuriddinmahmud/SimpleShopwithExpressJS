@@ -18,7 +18,7 @@ const Users = sequelize.define(
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true, 
+        isEmail: true,
       },
     },
     password: {
@@ -30,17 +30,17 @@ const Users = sequelize.define(
       allowNull: false,
       unique: true,
       validate: {
-        isNumeric: true, // Telefon raqami faqat raqamlardan iborat bo‘lishini tekshirish
+        isNumeric: true,
       },
     },
     role: {
       type: DataTypes.ENUM("Admin", "User", "Seller", "SuperAdmin"),
       allowNull: false,
-      defaultValue: "User", // Default qiymat berish
+      defaultValue: "User",
     },
     avatar: {
       type: DataTypes.STRING,
-      allowNull: true, // Avatar bo‘lmasligi mumkin
+      allowNull: true,
     },
     status: {
       type: DataTypes.ENUM("Active", "Inactive"),
@@ -51,7 +51,7 @@ const Users = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Regions, // Foreign key bo'lishi kerak
+        model: Regions,
         key: "id",
       },
       onUpdate: "CASCADE",
@@ -60,5 +60,8 @@ const Users = sequelize.define(
   },
   { timestamps: true }
 );
+
+Users.belongsTo(Regions, {foreignKey: "regionID"});
+Regions.hasMany(Users, {foreignKey: "regionID"});
 
 module.exports = Users;
