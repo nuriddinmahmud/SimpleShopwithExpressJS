@@ -178,6 +178,7 @@ async function findAll(req, res) {
         attributes: [
           "id",
           "fullName",
+          "yearOfBirth",
           "email",
           "role",
           "avatar",
@@ -185,7 +186,6 @@ async function findAll(req, res) {
           "createdAt",
           "updatedAt",
           "phone",
-          "location",
           "regionID",
         ],
       });
@@ -207,6 +207,7 @@ async function findOne(req, res) {
       attributes: [
         "id",
         "fullName",
+        "yearOfBirth",
         "email",
         "role",
         "avatar",
@@ -214,7 +215,6 @@ async function findOne(req, res) {
         "createdAt",
         "updatedAt",
         "phone",
-        "location",
         "regionID",
       ],
     });
@@ -246,14 +246,14 @@ async function update(req, res) {
       attributes: [
         "id",
         "fullName",
+        "yearOfBirth",
         "email",
-        "phone",
         "role",
         "avatar",
         "status",
         "createdAt",
         "updatedAt",
-        "location",
+        "phone",
         "regionID",
       ],
     });

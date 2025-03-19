@@ -1,7 +1,8 @@
-const {db, DataTypes} = require("../config/database.js");
+const { sequelize, DataTypes } = require("../config/database.js");
 const Regions = require("./regions.model.js");
 
-const Users = db.define(
+
+const Users = sequelize.define(
   "Users",
   {
     fullName: {
@@ -60,7 +61,7 @@ const Users = db.define(
   { timestamps: true }
 );
 
-Users.belongsTo(Regions, {foreignKey: "regionID"});
-Regions.hasMany(Users, {foreignKey: "regionID"});
+Users.belongsTo(Regions, { foreignKey: "regionID" });
+Regions.hasMany(Users, { foreignKey: "regionID" });
 
 module.exports = Users;
