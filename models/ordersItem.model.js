@@ -1,4 +1,6 @@
 const {db, DataTypes} = require("../config/database")
+const Orders = require("./orders.model")
+const Products = require("./products.model")
 
 const OrdersItem = db.define("OrdersItem", {
     id: {
@@ -12,13 +14,25 @@ const OrdersItem = db.define("OrdersItem", {
     },
     orderID: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Orders,
+            key: 'id'
+        }
     },
     productID: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Products,
+            key: 'id'
+        }
     }
 })
+
+OrdersItem.belongsTo(Orders, {foreignKey: 'orderID'})
+OrdersItem.belongsTo(Products, {foreignKey: 'productID'})
+
 
 
 module.exports = OrdersItem
