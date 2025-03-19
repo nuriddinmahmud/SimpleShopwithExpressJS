@@ -1,15 +1,11 @@
-const {Sequelize, DataTypes} = require("sequelize")
+const { Sequelize } = require("sequelize");
 
-const db = new Sequelize('db', 'root', '12345678', {
-    host: 'localhost',
-    dialect: 'mysql'
+const sequelize = new Sequelize({
+  dialect: "mysql",  // or "postgres", "sqlite", etc.
+  host: "localhost",  // Change to your DB host
+  username: "root",   // Your DB username
+  password: "1234",   // Your DB password
+  database: "mock",   // Your DB name
 });
 
-
-async function connect() {
-    await db.authenticate();
-    console.log('Connection has been established successfully.');
-    // await db.sync({force: true});
-}
-
-module.exports = {db, connect, DataTypes}
+module.exports = sequelize; // Export sequelize instance

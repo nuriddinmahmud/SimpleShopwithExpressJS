@@ -1,7 +1,7 @@
+const Users = require("./users.model.js");
+const Products = require("./products.model.js");
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
-const Users = require("./users.model");
-const Products = require("./products.model");
+const sequelize = require("../config/database.js"); // Correct import
 
 const Comments = sequelize.define("Comments", {
   id: {

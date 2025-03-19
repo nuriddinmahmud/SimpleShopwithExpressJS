@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 const { db, DataTypes } = require("../config/database");
+=======
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database.js");  // Correct import
+>>>>>>> 6223b77924741775dd44cc81e70f403de62e81e3
 const Users = require("./users.model");
 
-const Orders = db.define("Orders", {
+const Orders = sequelize.define("Orders", {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,

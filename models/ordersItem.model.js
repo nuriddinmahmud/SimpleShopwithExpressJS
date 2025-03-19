@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 const { db, DataTypes } = require("../config/database");
+=======
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database.js");  
+>>>>>>> 6223b77924741775dd44cc81e70f403de62e81e3
 const Orders = require("./orders.model");
 const Products = require("./products.model");
 
-const OrdersItem = db.define("OrdersItem", {
+const OrdersItem = sequelize.define("OrdersItem", {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -34,7 +39,10 @@ const OrdersItem = db.define("OrdersItem", {
     }
 });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6223b77924741775dd44cc81e70f403de62e81e3
 OrdersItem.belongsTo(Orders, { foreignKey: "orderID" });
 OrdersItem.belongsTo(Products, { foreignKey: "productID" });
 
