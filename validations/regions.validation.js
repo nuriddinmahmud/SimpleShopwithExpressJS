@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-function validationRegions(data) {
+function regionsValidation(data) {
   const regionSchema = Joi.object({
     name: Joi.string()
       .min(2)
@@ -12,7 +12,7 @@ function validationRegions(data) {
   return regionSchema.validate(data, { abortEarly: false });
 }
 
-function validationRegionsUpdate(data) {
+function regionsValidationUpdate(data) {
   const regionSchema = Joi.object({
     name: Joi.string()
       .min(2)
@@ -23,4 +23,4 @@ function validationRegionsUpdate(data) {
   return regionSchema.validate(data, { abortEarly: false });
 }
 
-module.exports = { validationRegions, validationRegionsUpdate };
+module.exports = { regionsValidation, regionsValidationUpdate };

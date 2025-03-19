@@ -31,19 +31,23 @@ const Products = sequelize.define("Products", {
   },
   userID: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
       model: Users,
       key: "id",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
-    allowNull: false,
   },
   categoryID: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
       model: Categories,
       key: "id",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
-    allowNull: false,
   },
 });
 

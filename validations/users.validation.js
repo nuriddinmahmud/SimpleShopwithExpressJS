@@ -11,12 +11,12 @@ function usersValidation(data) {
       .email({ tlds: { allow: ["com", "net", "uz", "ru", "en"] } })
       .required(),
     phone: Joi.string()
-      .length(13) // min va max o‘rniga length(13) ishlatildi
+      .length(13) 
       .pattern(/^\+998\d{9}$/)
       .required(),
     password: Joi.string()
       .min(8)
-      .pattern(/^[a-zA-Z0-9]{3,30}$/) // RegExp uchun new ishlatish shart emas
+      .pattern(/^[a-zA-Z0-9]{3,30}$/) 
       .required(),
     role: Joi.string()
       .valid("Admin", "User", "Seller", "SuperAdmin")
@@ -40,12 +40,12 @@ function usersValidationUpdate(data) {
       .email({ tlds: { allow: ["com", "net", "uz", "ru", "en"] } })
       .optional(),
     phone: Joi.string()
-      .length(13) // min va max o‘rniga length(13) ishlatildi
+      .length(13) 
       .pattern(/^\+998\d{9}$/)
       .optional(),
     password: Joi.string()
       .min(8)
-      .pattern(/^[a-zA-Z0-9]{3,30}$/) // Xato RegExp sintaksisi to‘g‘irlandi
+      .pattern(/^[a-zA-Z0-9]{3,30}$/) 
       .optional(),
     role: Joi.string()
       .valid("Admin", "User", "Seller", "SuperAdmin")
