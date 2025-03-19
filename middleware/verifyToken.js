@@ -16,6 +16,7 @@ function verifyToken(req, res, next) {
     let accessSecret = accessKey;
     let data = jwt.decode(token, accessSecret);
     req.user = data;
+    req.userID = data.id;
 
     next();
   } catch (error) {

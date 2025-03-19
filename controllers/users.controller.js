@@ -1,5 +1,8 @@
 const Users = require("../models/users.model.js");
-const { usersValidation, usersValidationUpdate } = require("../validations/users.validation.js");
+const {
+  usersValidation,
+  usersValidationUpdate,
+} = require("../validations/users.validation.js");
 const nodemailer = require("nodemailer");
 const { totp } = require("otplib");
 const bcrypt = require("bcrypt");

@@ -25,7 +25,7 @@ const getAll = async (req, res) => {
     let whereClause = {};
 
     if (search) {
-      whereClause.description = { [Op.iLike]: `%${search}%` };  // Fixed field name to "description"
+      whereClause.description = { [Op.iLike]: `%${search}%` }; // Fixed field name to "description"
     }
     if (userID) {
       whereClause.userID = userID;
@@ -58,7 +58,7 @@ const getAll = async (req, res) => {
     res.status(400).send({ error: err.message });
   }
 };
-eszrgdxfhrdtjfkhjtux
+
 const getOne = async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,8 +70,7 @@ const getOne = async (req, res) => {
     });
 
     if (!comment)
-      return res.status(404).json({ message: "Comment not found!" });  // Fixed message
-
+      return res.status(404).json({ message: "Comment not found!" });
     res.status(200).send({ data: comment });
   } catch (err) {
     res.status(400).send({ error: err.message });
@@ -85,7 +84,7 @@ const update = async (req, res) => {
     if (error) return res.status(400).json({ error: error.details[0].message });
 
     let updateComments = await Comments.update(value, { where: { id } });
-    if (!updateComments[0]) {  // Check update success (updateComments returns an array)
+    if (!updateComments[0]) {
       return res.status(404).send({ message: "Comment not found ❗" });
     }
 
@@ -101,13 +100,13 @@ const remove = async (req, res) => {
     const { id } = req.params;
     let deleteComments = await Comments.destroy({ where: { id } });
     if (!deleteComments) {
-      return res.status(404).send({ message: "Comment not found ❗" });  // Fixed message
+      return res.status(404).send({ message: "Comment not found ❗" }); 
     }
 
-    res.status(200).send({ message: "Comment deleted successfully" });  // Fixed message
+    res.status(200).send({ message: "Comment deleted successfully" }); 
   } catch (err) {
     res.status(400).send({ error: err.message });
   }
 };
 
-module.exports = { create, getAll, getOne, update, remove };  // Changed export to CommonJS
+module.exports = { create, getAll, getOne, update, remove }; 

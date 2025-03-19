@@ -13,14 +13,19 @@ const selfPolice = require("../middleware/selfPolice");
 
 const ProductRouter = express.Router();
 
-ProductRouter.post("/", verifyToken, selfPolice(["Admin", "User", "Seller", "SuperAdmin"]), create);
+ProductRouter.post(
+  "/",
+  verifyToken,
+  selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
+  create
+);
 
 ProductRouter.get("/", getAll);
 
 ProductRouter.get("/:id", getOne);
 
-ProductRouter.patch("/:id", verifyToken, checkRole(['Admin']), update);
+ProductRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
-ProductRouter.delete("/:id", verifyToken, checkRole(['Admin']), remove);
+ProductRouter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
 
-module.exports = ProductRouter; 
+module.exports = ProductRouter;

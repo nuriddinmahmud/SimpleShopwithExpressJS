@@ -13,14 +13,19 @@ const selfPolice = require("../middleware/selfPolice");
 
 const RegionRouter = express.Router();
 
-RegionRouter.post("/", verifyToken, selfPolice(["Admin", "User", "Seller", "SuperAdmin"]), create);
+RegionRouter.post(
+  "/",
+  verifyToken,
+  selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
+  create
+);
 
 RegionRouter.get("/", getAll);
 
 RegionRouter.get("/:id", getOne);
 
-RegionRouter.patch("/:id", verifyToken, checkRole(['Admin']), update);
+RegionRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
-RegionRouter.delete("/:id", verifyToken, checkRole(['Admin']), remove);
+RegionRouter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
 
 module.exports = RegionRouter;

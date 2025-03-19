@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const categoryValidation = Joi.object({
-  name: Joi.string().required().max(255).min(2),
+  name: Joi.string().max(255).min(2).required(),
   image: Joi.string().uri().required(),
 });
 

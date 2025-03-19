@@ -1,31 +1,31 @@
-// const express = require("express");
-// const {
-//   create,
-//   getAll,
-//   getOne,
-//   update,
-//   remove,
-// } = require("../controllers/ordersItem.controller");
+const express = require("express");
+const {
+  getAll,
+  getOne,
+  update,
+  remove,
+  post,
+} = require("../controllers/ordersItem.controller");
 
-// const verifyToken = require("../middleware/verifyToken");
-// const checkRole = require("../middleware/rolePolice");
-// const selfPolice = require("../middleware/selfPolice");
+const verifyToken = require("../middleware/verifyToken");
+const checkRole = require("../middleware/rolePolice");
+const selfPolice = require("../middleware/selfPolice");
 
-// const OrdersItemROuter = express.Router();
+const ordersItemRouter = express.Router();
 
-// OrdersItemROuter.post(
-//   "/",
-//   verifyToken,
-//   selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
-//   create
-// );
+ordersItemRouter.post(
+  "/",
+  verifyToken,
+  selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
+  post
+);
 
-// OrdersItemROuter.get("/", getAll);
+ordersItemRouter.get("/", getAll);
 
-// OrdersItemROuter.get("/:id", getOne);
+ordersItemRouter.get("/:id", getOne);
 
-// OrdersItemROuter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
+ordersItemRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
-// OrdersItemROuter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
+ordersItemRouter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
 
-// module.exports = OrdersItemROuter;
+module.exports = ordersItemRouter;
