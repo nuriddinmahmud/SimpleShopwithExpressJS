@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-const express = require("express")
-const app = express()
-
-
-
-
-
-
-
-
-app.listen(3000, ()=>console.log("Server started"))
-=======
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -45,4 +32,3 @@ async function shop() {
 }
 
 shop();
->>>>>>> 68cbd5b9493f61ef2760d9d419b2f8d6416de8bc
