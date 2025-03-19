@@ -1,7 +1,13 @@
-const Joi = require("joi")
+const Joi = require("joi");
 
-const schema = Joi.object({
-    name: Joi.string().required().max(255).min(2)    
-})
+const categoryValidation = Joi.object({
+  name: Joi.string().required().max(255).min(2),
+  image: Joi.string().uri().required(),
+});
 
-module.exports = schema
+const categoryValidationUpdate = Joi.object({
+  name: Joi.string().max(255).min(2).optional(),
+  image: Joi.string().uri().optional(),
+});
+
+module.exports = { categoryValidation, categoryValidationUpdate };

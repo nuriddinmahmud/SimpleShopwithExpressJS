@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-function validationComments(data) {
+function commentsValidation(data) {
   const commentSchema = Joi.object({
     description: Joi.string().min(5).max(500).required(),
     markedStar: Joi.number().integer().min(1).max(5).required(),
@@ -11,7 +11,7 @@ function validationComments(data) {
   return commentSchema.validate(data, { abortEarly: false });
 }
 
-function validationCommentsUpdate(data) {
+function commentsValidationUpdate(data) {
   const commentSchema = Joi.object({
     description: Joi.string().min(5).max(500),
     markedStar: Joi.number().integer().min(1).max(5),
@@ -22,4 +22,4 @@ function validationCommentsUpdate(data) {
   return commentSchema.validate(data, { abortEarly: false });
 }
 
-module.exports = { validationComments, validationCommentsUpdate };
+module.exports = { commentsValidation, commentsValidationUpdate };

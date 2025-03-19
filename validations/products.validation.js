@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-function validationProducts(data) {
+function productsValidation(data) {
   const productSchema = Joi.object({
     name: Joi.string().min(2).max(50).required(),
     description: Joi.string().min(5).max(500).required(),
@@ -14,7 +14,7 @@ function validationProducts(data) {
   return productSchema.validate(data, { abortEarly: false });
 }
 
-function validationProductsUpdate(data) {
+function productsValidationUpdate(data) {
   const productSchema = Joi.object({
     name: Joi.string().min(2).max(50),
     description: Joi.string().min(5).max(500),
@@ -28,4 +28,4 @@ function validationProductsUpdate(data) {
   return productSchema.validate(data, { abortEarly: false });
 }
 
-module.exports = { validationProducts, validationProductsUpdate };
+module.exports = { productsValidation, productsValidationUpdate };

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
+    "dev": "node --watch main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -13,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "bugs": {
+  
     "url": "https://github.com/nuriddinmahmud/SimpleShopwithExpressJS/issues"
   },
   "homepage": "https://github.com/nuriddinmahmud/SimpleShopwithExpressJS#readme",

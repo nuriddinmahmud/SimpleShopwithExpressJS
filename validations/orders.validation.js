@@ -1,7 +1,7 @@
 const Joi = require("joi")
 
-const schema = Joi.object({
+const ordersValidation = Joi.object({
     userID: Joi.number().min(1).required(),
 })
 
-module.exports = schema
+module.exports = ordersValidation
