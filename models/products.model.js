@@ -1,9 +1,9 @@
 const { DataTypes } = require("sequelize");
-const {db} = require("../config/database");
+const sequelize = require("../config/database"); // Correct import
+const Category = require("./category.model"); // Correct path
 const Users = require("./users.model");
-const Categories = require("./categories.model");
 
-const Products = db.define("Products", {
+const Products = sequelize.define("Products", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -43,7 +43,7 @@ const Products = db.define("Products", {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Categories,
+      model: Category,
       key: "id",
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
@@ -54,7 +54,7 @@ const Products = db.define("Products", {
 Users.hasMany(Products, { foreignKey: "userID" });
 Products.belongsTo(Users, { foreignKey: "userID" });
 
-Categories.hasMany(Products, { foreignKey: "categoryID" });
-Products.belongsTo(Categories, { foreignKey: "categoryID" });
+Category.hasMany(Products, { foreignKey: "categoryID" });
+Products.belongsTo(Category, { foreignKey: "categoryID" });
 
 module.exports = Products;

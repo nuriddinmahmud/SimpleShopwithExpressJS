@@ -8,4 +8,4 @@ function checkRole(data) {
   };
 }
 
-export default checkRole;
+module.exports = checkRole;

@@ -11,4 +11,4 @@ function selfPolice(data) {
   };
 }
 
-export default selfPolice;
+module.exports = selfPolice;

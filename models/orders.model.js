@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-const {db, DataTypes} = require("../config/database")
-const Users = require('./users.model')
-=======
-const { db, DataTypes } = require("../config/database");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database.js");  // Correct import
 const Users = require("./users.model");
->>>>>>> a0ed6d19695b00ed39bf85aaf6497593e4b25608
 
-const Orders = db.define("Orders", {
+const Orders = sequelize.define("Orders", {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -14,19 +10,6 @@ const Orders = db.define("Orders", {
     },
     userID: {
         type: DataTypes.INTEGER,
-<<<<<<< HEAD
-        references: {
-            model: Users,
-            key: "id",
-        },
-    }
-})
-
-Users.hasMany(Orders, {foreignKey: "userID"})
-Orders.belongsTo(Users, {foreignKey: "userID"})
-
-module.exports = Orders
-=======
         allowNull: false,
         references: {
             model: Users,
@@ -41,4 +24,3 @@ Users.hasMany(Orders, { foreignKey: "userID" });
 Orders.belongsTo(Users, { foreignKey: "userID" });
 
 module.exports = Orders;
->>>>>>> a0ed6d19695b00ed39bf85aaf6497593e4b25608

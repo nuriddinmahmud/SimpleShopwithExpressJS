@@ -25,7 +25,7 @@ const getAll = async (req, res) => {
     let whereClause = {};
 
     if (search) {
-      whereClause.name = { [Op.iLike]: `%${search}%` };
+      whereClause.description = { [Op.iLike]: `%${search}%` };  // Fixed field name to "description"
     }
     if (userID) {
       whereClause.userID = userID;
@@ -62,17 +62,17 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
   try {
     const { id } = req.params;
-    const comments = await Comments.findByPk(id, {
+    const comment = await Comments.findByPk(id, {
       include: [
         { model: Users, attributes: ["id", "fullName"] },
         { model: Products, attributes: ["id", "name"] },
       ],
     });
 
-    if (!comments)
-      return res.status(404).json({ message: "Comments not found!" });
+    if (!comment)
+      return res.status(404).json({ message: "Comment not found!" });  // Fixed message
 
-    res.status(200).send({ data: comments });
+    res.status(200).send({ data: comment });
   } catch (err) {
     res.status(400).send({ error: err.message });
   }
@@ -85,7 +85,7 @@ const update = async (req, res) => {
     if (error) return res.status(400).json({ error: error.details[0].message });
 
     let updateComments = await Comments.update(value, { where: { id } });
-    if (!updateComments) {
+    if (!updateComments[0]) {  // Check update success (updateComments returns an array)
       return res.status(404).send({ message: "Comment not found ❗" });
     }
 
@@ -101,13 +101,13 @@ const remove = async (req, res) => {
     const { id } = req.params;
     let deleteComments = await Comments.destroy({ where: { id } });
     if (!deleteComments) {
-      return res.status(404).send({ message: "Branch not found ❗" });
+      return res.status(404).send({ message: "Comment not found ❗" });  // Fixed message
     }
 
-    res.status(200).send({ message: "Branch deleted successfully" });
+    res.status(200).send({ message: "Comment deleted successfully" });  // Fixed message
   } catch (err) {
     res.status(400).send({ error: err.message });
   }
 };
 
-export { create, getAll, getOne, update, remove };
+module.exports = { create, getAll, getOne, update, remove };  // Changed export to CommonJS

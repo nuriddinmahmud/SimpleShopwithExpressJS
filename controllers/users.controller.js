@@ -1,16 +1,13 @@
-import Users from "../models/users.model.js";
-import {
-  usersValidation,
-  usersValidationUpdate,
-} from "../validations/users.validation.js";
-import nodemailer from "nodemailer";
-import { totp } from "otplib";
-import bcrypt from "bcrypt";
-import fs from "fs";
-import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
-import { Op } from "sequelize";
-import path from "path";
+const Users = require("../models/users.model.js");
+const { usersValidation, usersValidationUpdate } = require("../validations/users.validation.js");
+const nodemailer = require("nodemailer");
+const { totp } = require("otplib");
+const bcrypt = require("bcrypt");
+const fs = require("fs");
+const dotenv = require("dotenv");
+const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
+const path = require("path");
 
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
@@ -160,7 +157,6 @@ async function findAll(req, res) {
           "createdAt",
           "updatedAt",
           "phone",
-          "location",
           "regionID",
         ],
       });
@@ -200,6 +196,7 @@ async function findAll(req, res) {
     res.status(400).send({ error_message: error.message });
   }
 }
+
 async function findOne(req, res) {
   try {
     const { id } = req.params;
@@ -284,7 +281,7 @@ async function remove(req, res) {
   }
 }
 
-export {
+module.exports = {
   register,
   verifyOtp,
   login,
