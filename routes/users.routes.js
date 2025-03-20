@@ -9,6 +9,8 @@ const {
   promoteToAdmin,
   findOne,
   getNewAccessToken,
+  sendOtpPhone,
+  verifyOtpPhone
 } = require("../controllers/users.controller.js");
 const verifyToken = require("../middleware/verifyToken.js");
 const checkRole = require("../middleware/rolePolice.js");
@@ -97,6 +99,8 @@ const UsersRouter = express.Router();
  *         description: This account already exists
  */
 UsersRouter.post("/register", register);
+UsersRouter.post("/send-otp-phone", sendOtpPhone); // documentyatiyaga qoshish kere
+UsersRouter.post("/verify-otp-phone", verifyOtpPhone); // documentyatiyaga qoshish kere
 
 /**
  * @swagger
