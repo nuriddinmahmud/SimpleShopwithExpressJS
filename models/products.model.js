@@ -17,10 +17,6 @@ const Products = sequelize.define("Products", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  star: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   image: {
     type: DataTypes.STRING,
     allowNull: false,
