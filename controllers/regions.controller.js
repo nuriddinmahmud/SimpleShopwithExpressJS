@@ -49,7 +49,7 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
   try {
     const { id } = req.params;
-    const regions = await Regions.findByPk({ id });
+    const regions = await Regions.findByPk(id);
 
     if (!regions) return res.status(404).json({ message: "Regions not found" });
 
