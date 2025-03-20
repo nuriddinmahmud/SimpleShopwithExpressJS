@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
-const { db } = require("../config/db");
+const sequelize = require("../config/database.js");
 
-const Session = db.define(
+const Session = sequelize.define(
   "Session",
   {
     id: {

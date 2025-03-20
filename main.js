@@ -20,7 +20,21 @@ const swaggerSpec = swaggerJsDoc({
     },
     servers: [
       {
-        url: "http://localhost:" + PORT,
+        url: `http://localhost:${PORT}`,
+      },
+    ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        BearerAuth: [],
       },
     ],
   },

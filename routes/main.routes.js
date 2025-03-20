@@ -6,7 +6,7 @@ const orderRouter = require("./orders.routes.js");
 const ordersItemRouter = require("./ordersItem.routes.js");
 const userRouter = require("./users.routes.js");
 const categoryRouter = require("./category.routes.js");
-const sessionRouter = require("../controllers/sessions.controller.js");
+const sessionRouter = require("./sessions.routes.js");
 
 const mainRouter = express.Router();
 

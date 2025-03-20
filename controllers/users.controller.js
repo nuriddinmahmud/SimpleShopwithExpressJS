@@ -1,4 +1,5 @@
 const Users = require("../models/users.model.js");
+const Regions = require("../models/regions.model.js");
 const {
   usersValidation,
   usersValidationUpdate,
@@ -205,6 +206,13 @@ async function findAll(req, res) {
           "phone",
           "regionID",
         ],
+        include: [
+          {
+            model: Region,
+            as: "region", // Region jadvali bilan bog‘langan nom
+            attributes: ["id", "name"], // Kerakli maydonlarni tanlash
+          },
+        ],
       });
       return res.status(200).send({ data: findAllUsers });
     }
@@ -229,6 +237,13 @@ async function findAll(req, res) {
           "updatedAt",
           "phone",
           "regionID",
+        ],
+        include: [
+          {
+            model: Region,
+            as: "region",
+            attributes: ["id", "name"],
+          },
         ],
       });
       if (!findUser) {
@@ -260,6 +275,13 @@ async function findOne(req, res) {
         "phone",
         "regionID",
       ],
+      include: [
+        {
+          model: Region,
+          as: "region",
+          attributes: ["id", "name"],
+        },
+      ],
     });
     if (!user) return res.status(404).send({ message: "Users not found ❗" });
     res.status(200).send({ data: user });
@@ -278,16 +300,6 @@ async function update(req, res) {
 
     if (!["SuperAdmin", "Admin"].includes(req.user.role)) {
       return res
-<<<<<<< HEAD
-      .status(403)
-      .send({ message: "Only SuperAdmin can update users ❗️" });
-    }
-    let findUser = await Users.findByPk(id);
-    if(!findUser){
-      return res.status(403).send({ message: "User not found" });
-    }
-    await findUser.update(req.body)
-=======
         .status(403)
         .send({ message: "Only SuperAdmin can update users ❗️" });
     }
@@ -296,7 +308,6 @@ async function update(req, res) {
       return res.status(403).send({ message: "User not found" });
     }
     await findUser.update(req.body);
->>>>>>> e9da2370ce81466bec193a47a72571c5a31e654d
     res
       .status(200)
       .send({ message: "Users updated successfully", data: findUser });
