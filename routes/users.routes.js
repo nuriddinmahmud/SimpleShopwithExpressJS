@@ -8,13 +8,73 @@ const {
   remove,
   promoteToAdmin,
   findOne,
-  getNewAccessToken
+  getNewAccessToken,
 } = require("../controllers/users.controller.js");
 const verifyToken = require("../middleware/verifyToken.js");
 const checkRole = require("../middleware/rolePolice.js");
 const selfPolice = require("../middleware/selfPolice.js");
 
 const UsersRouter = express.Router();
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - fullName
+ *         - yearOfBirth
+ *         - email
+ *         - password
+ *         - phone
+ *         - role
+ *         - regionID
+ *       properties:
+ *         fullName:
+ *           type: string
+ *           example: "John Doe"
+ *         yearOfBirth:
+ *           type: integer
+ *           example: 1995
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: "user@example.com"
+ *         password:
+ *           type: string
+ *           format: password
+ *           example: "SecurePass123!"
+ *         phone:
+ *           type: string
+ *           example: "+998901234567"
+ *         role:
+ *           type: string
+ *           enum: ["Admin", "User", "Seller", "SuperAdmin"]
+ *           example: "User"
+ *         avatar:
+ *           type: string
+ *           nullable: true
+ *           example: "https://example.com/avatar.jpg"
+ *         status:
+ *           type: string
+ *           enum: ["Active", "Inactive"]
+ *           default: "Inactive"
+ *           example: "Inactive"
+ *         regionID:
+ *           type: integer
+ *           example: 1
+ *       example:
+ *         fullName: "John Doe"
+ *         yearOfBirth: 1995
+ *         email: "user@example.com"
+ *         password: "SecurePass123!"
+ *         phone: "+998901234567"
+ *         role: "User"
+ *         avatar: "https://example.com/avatar.jpg"
+ *         status: "Inactive"
+ *         regionID: 1
+ */
 
 /**
  * @swagger
@@ -27,16 +87,13 @@ const UsersRouter = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: "#/components/schemas/User"
  *     responses:
  *       200:
  *         description: User registered successfully
- *       405:
+ *       400:
+ *         description: Invalid input data
+ *       409:
  *         description: This account already exists
  */
 UsersRouter.post("/register", register);
@@ -123,7 +180,12 @@ UsersRouter.post("/get-access-token", getNewAccessToken);
  *       200:
  *         description: User promoted successfully
  */
-UsersRouter.patch("/promoteToAdmin/:id", verifyToken, selfPolice(["Admin"]), promoteToAdmin);
+UsersRouter.patch(
+  "/promoteToAdmin/:id",
+  verifyToken,
+  selfPolice(["Admin"]),
+  promoteToAdmin
+);
 
 /**
  * @swagger
@@ -137,7 +199,12 @@ UsersRouter.patch("/promoteToAdmin/:id", verifyToken, selfPolice(["Admin"]), pro
  *       200:
  *         description: List of all users
  */
-UsersRouter.get("/", verifyToken, checkRole(["Admin", "User", "Seller", "SuperAdmin"]), findAll);
+UsersRouter.get(
+  "/",
+  verifyToken,
+  checkRole(["Admin", "User", "Seller", "SuperAdmin"]),
+  findAll
+);
 
 /**
  * @swagger
@@ -159,7 +226,12 @@ UsersRouter.get("/", verifyToken, checkRole(["Admin", "User", "Seller", "SuperAd
  *       404:
  *         description: User not found
  */
-UsersRouter.get("/:id", verifyToken, checkRole(["Admin", "User", "Seller", "SuperAdmin"]), findOne);
+UsersRouter.get(
+  "/:id",
+  verifyToken,
+  checkRole(["Admin", "User", "Seller", "SuperAdmin"]),
+  findOne
+);
 
 /**
  * @swagger
