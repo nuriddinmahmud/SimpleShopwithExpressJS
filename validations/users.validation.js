@@ -32,7 +32,7 @@ function usersValidation(data) {
 
 function usersValidationUpdate(data) {
   const Users = Joi.object({
-    fullname: Joi.string()
+    fullName: Joi.string()
       .min(2)
       .max(25)
       .pattern(/^[a-zA-Z]+$/)

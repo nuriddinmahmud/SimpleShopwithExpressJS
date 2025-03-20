@@ -264,36 +264,19 @@ async function update(req, res) {
       return res.status(422).send({ message: error.details[0].message });
     if (value.password) value.password = await bcrypt.hash(value.password, 10);
 
-    if (!["Admin", "SuperAdmin"].includes(req.user.role)) {
-      let user = await Users.findByPk(id);
+    if (!["SuperAdmin", "Admin"].includes(req.user.role)) {
       return res
-        .status(403)
-        .send({ message: "Only SuperAdmin and Admin can update users ❗" });
+      .status(403)
+      .send({ message: "Only SuperAdmin can update users ❗️" });
     }
-
-    let updatedUser = await Users.update(value, { where: { id } });
-    if (!updatedUser[0])
-      console.log(error.message);
-      return res.status(404).send({ message: "Users not found ❗️" });
-
-    let result = await Users.findByPk(id, {
-      attributes: [
-        "id",
-        "fullName",
-        "yearOfBirth",
-        "email",
-        "role",
-        "avatar",
-        "status",
-        "createdAt",
-        "updatedAt",
-        "phone",
-        "regionID",
-      ],
-    });
+    let findUser = await Users.findByPk(id);
+    if(!findUser){
+      return res.status(403).send({ message: "User not found" });
+    }
+    await findUser.update(req.body)
     res
       .status(200)
-      .send({ message: "Users updated successfully", data: result });
+      .send({ message: "Users updated successfully", data: findUser });
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
@@ -304,13 +287,16 @@ async function remove(req, res) {
     const { id } = req.params;
     let findUser = await Users.findByPk(id);
     if (!findUser)
-      return res.status(404).send({ message: "Users not found ❗" });
-
-    let deletedUser = await Users.destroy({
-      where: { id, role: { [Op.in]: ["Users"] } },
-    });
-    if (!deletedUser)
-      return res.status(403).send({ message: "Only users can be deleted ❗" });
+      return res.status(404).send({ message: "Users not found ❗️" });
+    if(findUser.role == "Admin"){
+      return res.status(403).send({ message: "Nobody can destroy admin ❗️" });
+    }
+    // let deletedUser = await Users.destroy({
+    //   where: { id, role: { [Op.in]: ["Users"] } },
+    // });
+    await findUser.destroy()
+    // if (!deletedUser)
+      // return res.status(403).send({ message: "Only users can be deleted ❗️" });
 
     res.status(200).send({ message: "Users deleted successfully" });
   } catch (error) {
