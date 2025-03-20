@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  post,
   getAll,
   getOne,
   update,
@@ -16,7 +17,7 @@ CategoryRouter.post(
   "/",
   verifyToken,
   selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
-  create
+  post
 );
 
 CategoryRouter.get("/", getAll);
