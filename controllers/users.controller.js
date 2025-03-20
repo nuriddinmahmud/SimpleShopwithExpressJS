@@ -121,9 +121,11 @@ async function login(req, res) {
       email: user.email,
       role: user.role,
     });
-    res
-      .status(200)
-      .send({ message: "Logged in successfully", access_token: accessToken, refresh_token: refreshToken });
+    res.status(200).send({
+      message: "Logged in successfully",
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
@@ -132,7 +134,7 @@ async function login(req, res) {
 async function accessTokenGenereate(payload) {
   try {
     let accessSecret = process.env.ACCESS_KEY || "accessKey";
-    return jwt.sign(payload, accessSecret, {expiresIn: "15m"});
+    return jwt.sign(payload, accessSecret, { expiresIn: "15m" });
   } catch (error) {
     console.log(error.message);
   }
@@ -141,7 +143,7 @@ async function accessTokenGenereate(payload) {
 async function refreshTokenGenereate(payload) {
   try {
     let accessSecret = process.env.REFRESH_KEY || "refreshKey";
-    return jwt.sign(payload, accessSecret, {expiresIn: "7d"});
+    return jwt.sign(payload, accessSecret, { expiresIn: "7d" });
   } catch (error) {
     console.log(error.message);
   }
@@ -159,17 +161,27 @@ async function promoteToAdmin(req, res) {
 }
 
 async function getNewAccessToken(req, res) {
-  try{
+  try {
     const refreshToken = req.header("Authorization")?.split(" ")[1];
-    
-    let data = await jwt.verify(refreshToken, process.env.REFRESH_KEY || "refreshKey");
+
+    let data = await jwt.verify(
+      refreshToken,
+      process.env.REFRESH_KEY || "refreshKey"
+    );
     const user = await Users.findByPk(data.id);
-    if(!user) {
-      return res.status(404).send({message: "User not found ❗"})
-    };
-    let accessToken = await accessTokenGenereate({id: user.id, email: user.email, role: user.role})
-    res.status(200).send({message: "New access token generated successfully", access_token: accessToken})
-  }catch(error){
+    if (!user) {
+      return res.status(404).send({ message: "User not found ❗" });
+    }
+    let accessToken = await accessTokenGenereate({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+    res.status(200).send({
+      message: "New access token generated successfully",
+      access_token: accessToken,
+    });
+  } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
 }
@@ -264,36 +276,19 @@ async function update(req, res) {
       return res.status(422).send({ message: error.details[0].message });
     if (value.password) value.password = await bcrypt.hash(value.password, 10);
 
-    if (!["Admin", "SuperAdmin"].includes(req.user.role)) {
-      let user = await Users.findByPk(id);
+    if (!["SuperAdmin", "Admin"].includes(req.user.role)) {
       return res
         .status(403)
-        .send({ message: "Only SuperAdmin and Admin can update users ❗" });
+        .send({ message: "Only SuperAdmin can update users ❗️" });
     }
-
-    let updatedUser = await Users.update(value, { where: { id } });
-    if (!updatedUser[0])
-      console.log(error.message);
-      return res.status(404).send({ message: "Users not found ❗️" });
-
-    let result = await Users.findByPk(id, {
-      attributes: [
-        "id",
-        "fullName",
-        "yearOfBirth",
-        "email",
-        "role",
-        "avatar",
-        "status",
-        "createdAt",
-        "updatedAt",
-        "phone",
-        "regionID",
-      ],
-    });
+    let findUser = await Users.findByPk(id);
+    if (!findUser) {
+      return res.status(403).send({ message: "User not found" });
+    }
+    await findUser.update(req.body);
     res
       .status(200)
-      .send({ message: "Users updated successfully", data: result });
+      .send({ message: "Users updated successfully", data: findUser });
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
@@ -328,5 +323,5 @@ module.exports = {
   remove,
   promoteToAdmin,
   deleteOldImage,
-  getNewAccessToken
+  getNewAccessToken,
 };
