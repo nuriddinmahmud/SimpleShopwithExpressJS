@@ -3,7 +3,7 @@ const {
   createSession,
   getUserSession,
   deleteUserSession,
-} = require("../controllers/session.controller");
+} = require("../controllers/sessions.controller");
 
 const verifyToken = require("../middleware/verifyToken");
 

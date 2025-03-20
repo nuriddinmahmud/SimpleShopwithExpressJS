@@ -1,9 +1,9 @@
-const Session = require("../models/session.model.js");
-const { sessionValidation } = require("../validations/session.validation.js");
+const Session = require("../models/sessions.model.js");
+const { sessionsValidation } = require("../validations/sessions.validation.js");
 
 const createSession = async (req, res) => {
   try {
-    const { error, value } = sessionValidation(req.body);
+    const { error, value } = sessionsValidation(req.body);
     if (error) return res.status(422).send({ error: error.details[0].message });
 
     const newSession = await Session.create(value);
