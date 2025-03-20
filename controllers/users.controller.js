@@ -264,15 +264,18 @@ async function update(req, res) {
       return res.status(422).send({ message: error.details[0].message });
     if (value.password) value.password = await bcrypt.hash(value.password, 10);
 
-    if (req.user.role !== "SuperAdmin") {
+    if (!["Admin", "SuperAdmin"].includes(req.user.role)) {
+      let user = await Users.findByPk(id);
       return res
         .status(403)
-        .send({ message: "Only SuperAdmin can update users ❗" });
+        .send({ message: "Only SuperAdmin and Admin can update users ❗" });
     }
 
     let updatedUser = await Users.update(value, { where: { id } });
     if (!updatedUser[0])
+      console.log(error.message);
       return res.status(404).send({ message: "Users not found ❗️" });
+
     let result = await Users.findByPk(id, {
       attributes: [
         "id",
