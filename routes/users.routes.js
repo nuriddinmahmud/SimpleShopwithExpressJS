@@ -70,7 +70,7 @@ const UsersRouter = express.Router();
  *         email: "user@example.com"
  *         password: "SecurePass123!"
  *         phone: "+998901234567"
- *         role: "User"
+ *         role: "User/Admin/Super-Admin/Seller"
  *         avatar: "https://example.com/avatar.jpg"
  *         status: "Inactive"
  *         regionID: 1
