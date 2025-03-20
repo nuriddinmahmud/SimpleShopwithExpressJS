@@ -1,4 +1,5 @@
 const Users = require("../models/users.model.js");
+const Regions = require("../models/regions.model.js");
 const {
   usersValidation,
   usersValidationUpdate,
@@ -121,9 +122,11 @@ async function login(req, res) {
       email: user.email,
       role: user.role,
     });
-    res
-      .status(200)
-      .send({ message: "Logged in successfully", access_token: accessToken, refresh_token: refreshToken });
+    res.status(200).send({
+      message: "Logged in successfully",
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
@@ -132,7 +135,7 @@ async function login(req, res) {
 async function accessTokenGenereate(payload) {
   try {
     let accessSecret = process.env.ACCESS_KEY || "accessKey";
-    return jwt.sign(payload, accessSecret, {expiresIn: "15m"});
+    return jwt.sign(payload, accessSecret, { expiresIn: "15m" });
   } catch (error) {
     console.log(error.message);
   }
@@ -141,7 +144,7 @@ async function accessTokenGenereate(payload) {
 async function refreshTokenGenereate(payload) {
   try {
     let accessSecret = process.env.REFRESH_KEY || "refreshKey";
-    return jwt.sign(payload, accessSecret, {expiresIn: "7d"});
+    return jwt.sign(payload, accessSecret, { expiresIn: "7d" });
   } catch (error) {
     console.log(error.message);
   }
@@ -159,17 +162,27 @@ async function promoteToAdmin(req, res) {
 }
 
 async function getNewAccessToken(req, res) {
-  try{
+  try {
     const refreshToken = req.header("Authorization")?.split(" ")[1];
-    
-    let data = await jwt.verify(refreshToken, process.env.REFRESH_KEY || "refreshKey");
+
+    let data = await jwt.verify(
+      refreshToken,
+      process.env.REFRESH_KEY || "refreshKey"
+    );
     const user = await Users.findByPk(data.id);
-    if(!user) {
-      return res.status(404).send({message: "User not found ❗"})
-    };
-    let accessToken = await accessTokenGenereate({id: user.id, email: user.email, role: user.role})
-    res.status(200).send({message: "New access token generated successfully", access_token: accessToken})
-  }catch(error){
+    if (!user) {
+      return res.status(404).send({ message: "User not found ❗" });
+    }
+    let accessToken = await accessTokenGenereate({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+    res.status(200).send({
+      message: "New access token generated successfully",
+      access_token: accessToken,
+    });
+  } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
 }
@@ -192,6 +205,13 @@ async function findAll(req, res) {
           "updatedAt",
           "phone",
           "regionID",
+        ],
+        include: [
+          {
+            model: Region,
+            as: "region", // Region jadvali bilan bog‘langan nom
+            attributes: ["id", "name"], // Kerakli maydonlarni tanlash
+          },
         ],
       });
       return res.status(200).send({ data: findAllUsers });
@@ -217,6 +237,13 @@ async function findAll(req, res) {
           "updatedAt",
           "phone",
           "regionID",
+        ],
+        include: [
+          {
+            model: Region,
+            as: "region",
+            attributes: ["id", "name"],
+          },
         ],
       });
       if (!findUser) {
@@ -248,6 +275,13 @@ async function findOne(req, res) {
         "phone",
         "regionID",
       ],
+      include: [
+        {
+          model: Region,
+          as: "region",
+          attributes: ["id", "name"],
+        },
+      ],
     });
     if (!user) return res.status(404).send({ message: "Users not found ❗" });
     res.status(200).send({ data: user });
@@ -266,14 +300,14 @@ async function update(req, res) {
 
     if (!["SuperAdmin", "Admin"].includes(req.user.role)) {
       return res
-      .status(403)
-      .send({ message: "Only SuperAdmin can update users ❗" });
+        .status(403)
+        .send({ message: "Only SuperAdmin can update users ❗️" });
     }
     let findUser = await Users.findByPk(id);
-    if(!findUser){
+    if (!findUser) {
       return res.status(403).send({ message: "User not found" });
     }
-    await findUser.update(req.body)
+    await findUser.update(req.body);
     res
       .status(200)
       .send({ message: "Users updated successfully", data: findUser });
@@ -287,23 +321,21 @@ async function remove(req, res) {
     const { id } = req.params;
     let findUser = await Users.findByPk(id);
     if (!findUser)
-      return res.status(404).send({ message: "Users not found ❗" });
+      return res.status(404).send({ message: "Users not found ❗️" });
     if(findUser.role == "Admin"){
-      return res.status(403).send({ message: "Nobody can destroy admin ❗" });
+      return res.status(403).send({ message: "Nobody can destroy admin ❗️" });
     }
     // let deletedUser = await Users.destroy({
     //   where: { id, role: { [Op.in]: ["Users"] } },
     // });
     await findUser.destroy()
     // if (!deletedUser)
-      // return res.status(403).send({ message: "Only users can be deleted ❗" });
+      // return res.status(403).send({ message: "Only users can be deleted ❗️" });
 
-    res.status(200).send({ message: "Users deleted successfully" });
-  } catch (error) {
-    res.status(400).send({ error_message: error.message });
+  }catch(e){
+    res.status(400).send({ error_message: e.message });
   }
 }
-
 module.exports = {
   register,
   verifyOtp,
@@ -314,5 +346,5 @@ module.exports = {
   remove,
   promoteToAdmin,
   deleteOldImage,
-  getNewAccessToken
+  getNewAccessToken,
 };

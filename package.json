@@ -32,6 +32,7 @@
     "mysql2": "^3.13.0",
     "nodemailer": "^6.10.0",
     "otplib": "^12.0.1",
+    "path": "^0.12.7",
     "sequelize": "^6.37.6",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
