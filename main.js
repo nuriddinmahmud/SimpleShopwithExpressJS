@@ -12,17 +12,17 @@ const path = require("path");
 dotenv.config();
 const PORT = process.env.PORT || 3006;
 
-const swaggerSpec = {
+const swaggerSpec = swaggerJsDoc({
   definition: {
     openapi: "3.0.0",
+    info: {
+      title: "Simple Shop API",
+      version: "1.0.0",
+      description: "API documentation for Simple Shop project",
+    },
     servers: [
       {
-<<<<<<< HEAD
-        url: "http://localhost:3006",
-        description: "Local server",
-=======
         url: `http://localhost:${PORT}`,
->>>>>>> 0822e45a8c2f4a1c1a2927662daac7d1110e36f3
       },
     ],
     components: {
@@ -40,8 +40,8 @@ const swaggerSpec = {
       },
     ],
   },
-  apis: ["./routes/*.js", "index.js"],
-};
+  apis: ["./routes/*.js", "main.js"],
+});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -56,13 +56,31 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const app = express();
+app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.use("/image", express.static("uploads"));
+app.use("/api", mainRouter);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 /**
  * @swagger
  * /upload:
  *   post:
  *     summary: Upload an image
  *     description: Uploads an image file and returns its URL.
+ *     tags: [Uploads]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
+ *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -89,23 +107,16 @@ const upload = multer({ storage: storage });
  *       500:
  *         description: Internal server error.
  */
-app.use("/upload", upload.single("image"), (req, res) => {
-  res.send({ url: `http://localhost:3006/image/${req.file.filename}` });
+app.post("/upload", upload.single("image"), (req, res) => {
+  if (!req.file) {
+    return res
+      .status(400)
+      .send({ message: "No file uploaded or invalid file type." });
+  }
+  res
+    .status(200)
+    .send({ url: `http://localhost:${PORT}/image/${req.file.filename}` });
 });
-
-const app = express();
-app.use(express.json());
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-app.use("/image", express.static("uploads"));
-app.use("/api", mainRouter);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 async function shop() {
   try {
