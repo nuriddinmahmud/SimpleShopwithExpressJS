@@ -6,6 +6,7 @@ const orderRouter = require("./orders.routes.js");
 const ordersItemRouter = require("./ordersItem.routes.js");
 const userRouter = require("./users.routes.js");
 const categoryRouter = require("./category.routes.js");
+const sessionRouter = require("../controllers/sessions.controller.js");
 
 const mainRouter = express.Router();
 
@@ -16,5 +17,6 @@ mainRouter.use("/regions", regionRouter);
 mainRouter.use("/orders", orderRouter);
 mainRouter.use("/users", userRouter);
 mainRouter.use("/category", categoryRouter);
+mainRouter.use("/sessions", sessionRouter);
 
 module.exports = mainRouter;

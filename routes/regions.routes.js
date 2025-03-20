@@ -15,8 +15,8 @@ const RegionRouter = express.Router();
 
 RegionRouter.post(
   "/",
-  // verifyToken,
-  // selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
+  verifyToken,
+  selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
   create
 );
 
