@@ -1,5 +1,9 @@
 const Session = require("../models/sessions.model.js");
+<<<<<<< HEAD
+const { sessionValidation } = require("../validations/sessions.validation.js");
+=======
 const { sessionsValidation } = require("../validations/sessions.validation.js");
+>>>>>>> f964b36679dd47467571817c97f574e6795d8df6
 
 const createSession = async (req, res) => {
   try {

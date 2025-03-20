@@ -1,4 +1,5 @@
 const Users = require("../models/users.model.js");
+const Regions = require("../models/regions.model.js");
 const {
   usersValidation,
   usersValidationUpdate,
@@ -205,6 +206,13 @@ async function findAll(req, res) {
           "phone",
           "regionID",
         ],
+        include: [
+          {
+            model: Region,
+            as: "region", // Region jadvali bilan bog‘langan nom
+            attributes: ["id", "name"], // Kerakli maydonlarni tanlash
+          },
+        ],
       });
       return res.status(200).send({ data: findAllUsers });
     }
@@ -229,6 +237,13 @@ async function findAll(req, res) {
           "updatedAt",
           "phone",
           "regionID",
+        ],
+        include: [
+          {
+            model: Region,
+            as: "region",
+            attributes: ["id", "name"],
+          },
         ],
       });
       if (!findUser) {
@@ -259,6 +274,13 @@ async function findOne(req, res) {
         "updatedAt",
         "phone",
         "regionID",
+      ],
+      include: [
+        {
+          model: Region,
+          as: "region",
+          attributes: ["id", "name"],
+        },
       ],
     });
     if (!user) return res.status(404).send({ message: "Users not found ❗" });

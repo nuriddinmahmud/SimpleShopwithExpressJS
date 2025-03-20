@@ -17,8 +17,12 @@ const swaggerSpec = {
     openapi: "3.0.0",
     servers: [
       {
+<<<<<<< HEAD
         url: "http://localhost:3006",
         description: "Local server",
+=======
+        url: `http://localhost:${PORT}`,
+>>>>>>> 0822e45a8c2f4a1c1a2927662daac7d1110e36f3
       },
     ],
     components: {

@@ -1,8 +1,15 @@
 const { DataTypes } = require("sequelize");
+<<<<<<< HEAD
+const sequelize = require("../config/database.js");
+
+const Session = sequelize.define(
+  "Session",
+=======
 const sequelize = require("../config/database");
 
 const Session = sequelize.define(
   "Sessions",
+>>>>>>> f964b36679dd47467571817c97f574e6795d8df6
   {
     id: {
       type: DataTypes.INTEGER,
