@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 function usersValidation(data) {
   const Users = Joi.object({
-    fullname: Joi.string()
+    fullName: Joi.string()
       .max(25)
       .min(2)
       .pattern(/^[a-zA-Z]+$/)
@@ -24,6 +24,7 @@ function usersValidation(data) {
     avatar: Joi.string().required(),
     status: Joi.string().valid("Active", "Inactive").optional(),
     regionID: Joi.number().required(),
+    yearOfBirth: Joi.number().required()
   });
 
   return Users.validate(data, { abortEarly: true });

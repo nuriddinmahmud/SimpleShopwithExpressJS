@@ -115,9 +115,15 @@ async function login(req, res) {
       email: user.email,
       role: user.role,
     });
+
+    let refreshToken = await refreshTokenGenereate({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
     res
       .status(200)
-      .send({ message: "Logged in successfully", access_token: accessToken });
+      .send({ message: "Logged in successfully", access_token: accessToken, refresh_token: refreshToken });
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
@@ -126,7 +132,16 @@ async function login(req, res) {
 async function accessTokenGenereate(payload) {
   try {
     let accessSecret = process.env.ACCESS_KEY || "accessKey";
-    return jwt.sign(payload, accessSecret);
+    return jwt.sign(payload, accessSecret, {expiresIn: "15m"});
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+async function refreshTokenGenereate(payload) {
+  try {
+    let accessSecret = process.env.REFRESH_KEY || "refreshKey";
+    return jwt.sign(payload, accessSecret, {expiresIn: "7d"});
   } catch (error) {
     console.log(error.message);
   }
@@ -139,6 +154,22 @@ async function promoteToAdmin(req, res) {
     await Users.update({ role }, { where: { id } });
     res.status(200).send({ message: "Updated successfully" });
   } catch (error) {
+    res.status(400).send({ error_message: error.message });
+  }
+}
+
+async function getNewAccessToken(req, res) {
+  try{
+    const refreshToken = req.header("Authorization")?.split(" ")[1];
+    
+    let data = await jwt.verify(refreshToken, process.env.REFRESH_KEY || "refreshKey");
+    const user = await Users.findByPk(data.id);
+    if(!user) {
+      return res.status(404).send({message: "User not found ❗"})
+    };
+    let accessToken = await accessTokenGenereate({id: user.id, email: user.email, role: user.role})
+    res.status(200).send({message: "New access token generated successfully", access_token: accessToken})
+  }catch(error){
     res.status(400).send({ error_message: error.message });
   }
 }
@@ -294,4 +325,5 @@ module.exports = {
   remove,
   promoteToAdmin,
   deleteOldImage,
+  getNewAccessToken
 };

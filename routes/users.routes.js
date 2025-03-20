@@ -8,6 +8,7 @@ const {
   remove,
   promoteToAdmin,
   findOne,
+  getNewAccessToken
 } = require("../controllers/users.controller.js");
 const verifyToken = require("../middleware/verifyToken.js");
 const checkRole = require("../middleware/rolePolice.js");
@@ -18,6 +19,7 @@ const UsersRouter = express.Router();
 UsersRouter.post("/register", register);
 UsersRouter.post("/verify-otp", verifyOtp);
 UsersRouter.post("/login", login);
+UsersRouter.post("/get-access-token", getNewAccessToken);
 UsersRouter.patch(
   "/promoteToAdmin/:id",
   verifyToken,
