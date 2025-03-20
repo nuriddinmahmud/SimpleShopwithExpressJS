@@ -78,7 +78,7 @@ const UsersRouter = express.Router();
 
 /**
  * @swagger
- * /users/register:
+ * /user/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Users]

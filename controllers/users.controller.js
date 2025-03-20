@@ -208,7 +208,7 @@ async function findAll(req, res) {
         ],
         include: [
           {
-            model: Region,
+            model: Regions,
             as: "region", 
             attributes: ["id", "name"], 
           },
