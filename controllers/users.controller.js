@@ -209,8 +209,8 @@ async function findAll(req, res) {
         include: [
           {
             model: Region,
-            as: "region", // Region jadvali bilan bog‘langan nom
-            attributes: ["id", "name"], // Kerakli maydonlarni tanlash
+            as: "region", 
+            attributes: ["id", "name"], 
           },
         ],
       });

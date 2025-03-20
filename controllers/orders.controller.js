@@ -1,28 +1,24 @@
 const Orders = require("../models/orders.model");
 const OrdersItem = require("../models/ordersItem.model");
 const Users = require("../models/users.model");
-const Validation = require("../validations/orders.validation");
+const {
+  ordersValidation,
+  ordersValidationUpdate,
+} = require("../validations/orders.validation");
 
 async function getAll(req, res) {
   try {
-    if (req.query.userID) {
-      let data = await Orders.findAll({
-        where: { userID: req.query.userID },
-        include: [
-          {
-            model: Users,
-            as: "user",
-            attributes: ["id", "name"],
-          },
-        ],
-      });
-      res.send(data);
-      return;
-    }
-    let data = await Orders.findAll();
+    let whereCondition = req.query.userID ? { userID: req.query.userID } : {};
+    let data = await Orders.findAll({
+      where: whereCondition,
+      include: [
+        { model: Users, as: "user", attributes: ["id", "fullName"] },
+        { model: OrdersItem, as: "items" },
+      ],
+    });
     res.send(data);
   } catch (error) {
-    res.send(error.message);
+    res.status(500).send({ error: error.message });
   }
 }
 
@@ -30,65 +26,122 @@ async function getOne(req, res) {
   try {
     let data = await Orders.findByPk(req.params.id, {
       include: [
-        {
-          model: Users,
-          as: "user",
-          attributes: ["id", "name"],
-        },
+        { model: Users, as: "user", attributes: ["id", "fullName"] },
+        { model: OrdersItem, as: "items" },
       ],
     });
+    if (!data) return res.status(404).send({ message: "Order not found" });
     res.send(data);
   } catch (error) {
-    res.send(error.message);
+    res.status(500).send({ error: error.message });
   }
 }
 
 async function post(req, res) {
   try {
-    const { error } = Validation.ordersValidation.validate(req.body);
-    if (error) {
-      res.send(error.message);
-      return;
+    const { error } = ordersValidation.validate(req.body);
+    if (error) return res.status(400).send({ error: error.message });
+
+    const newOrder = await Orders.create({
+      userID: req.body.userID,
+      totalAmount: req.body.totalAmount,
+      status: req.body.status,
+    });
+
+    if (req.body.items && Array.isArray(req.body.items)) {
+      await Promise.all(
+        req.body.items.map(async (item) => {
+          await OrdersItem.create({
+            orderID: newOrder.id,
+            productID: item.productID,
+            quantity: item.quantity,
+            price: item.price,
+          });
+        })
+      );
     }
-    const items = await OrdersItem.create({ userID: req.userID });
-    const order = await Orders.create(req.body);
-    res.send(order);
+
+    res
+      .status(201)
+      .send({ message: "Order created successfully", order: newOrder });
   } catch (error) {
-    res.send(error.message);
+    res.status(500).send({ error: error.message });
   }
 }
 
 async function update(req, res) {
   try {
-    const { error } = Validation.ordersValidationUpdate.validate(req.body);
-    if (error) {
-      res.send(error.message);
-      return;
-    }
+    const { error } = ordersValidationUpdate.validate(req.body);
+    if (error) return res.status(400).send({ error: error.message });
+
     const order = await Orders.findByPk(req.params.id);
-    if (!order) {
-      res.status(404).send("Not found");
-      return;
+    if (!order) return res.status(404).send({ message: "Order not found" });
+
+    await order.update({
+      totalAmount: req.body.totalAmount,
+      status: req.body.status,
+    });
+
+    if (req.body.items && Array.isArray(req.body.items)) {
+      const existingItems = await OrdersItem.findAll({ where: { orderID: order.id } });
+
+      const itemsToDelete = existingItems.filter(
+        (existingItem) => !req.body.items.some((item) => item.productID === existingItem.productID)
+      );
+
+      const itemsToAdd = req.body.items.filter(
+        (item) => !existingItems.some((existingItem) => existingItem.productID === item.productID)
+      );
+
+      const itemsToUpdate = req.body.items.filter((item) =>
+        existingItems.some((existingItem) => existingItem.productID === item.productID)
+      );
+
+      await Promise.all(
+        itemsToDelete.map(async (item) => {
+          await OrdersItem.destroy({ where: { id: item.id } });
+        })
+      );
+
+      await Promise.all(
+        itemsToAdd.map(async (item) => {
+          await OrdersItem.create({
+            orderID: order.id,
+            productID: item.productID,
+            quantity: item.quantity,
+            price: item.price,
+          });
+        })
+      );
+
+      await Promise.all(
+        itemsToUpdate.map(async (item) => {
+          await OrdersItem.update(
+            { quantity: item.quantity, price: item.price },
+            { where: { orderID: order.id, productID: item.productID } }
+          );
+        })
+      );
     }
-    await order.update(req.body);
-    res.send(order);
+
+    res.send({ message: "Order updated successfully", order });
   } catch (error) {
-    res.send(error.message);
+    res.status(500).send({ error: error.message });
   }
 }
 
-async function remove(params) {
+async function remove(req, res) {
   try {
     const order = await Orders.findByPk(req.params.id);
-    if (!order) {
-      res.status(404).send("Not found");
-      return;
-    }
+    if (!order) return res.status(404).send({ message: "Order not found" });
+
+    await OrdersItem.destroy({ where: { orderID: order.id } });
     await order.destroy();
-    res.send("Deleted");
+
+    res.send({ message: "Order deleted successfully" });
   } catch (error) {
-    res.send(error.message);
+    res.status(500).send({ error: error.message });
   }
 }
 
-module.exports = { getAll, getOne, update, remove, post };
+module.exports = { getAll, getOne, post, update, remove };
