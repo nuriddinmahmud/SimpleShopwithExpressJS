@@ -11,6 +11,7 @@ const SessionRouter = express.Router();
 
 /**
  * @swagger
+<<<<<<< HEAD
  * tags:
  *   name: Sessions
  *   description: API for managing user sessions
@@ -18,6 +19,8 @@ const SessionRouter = express.Router();
 
 /**
  * @swagger
+=======
+>>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  * /api/sessions:
  *   post:
  *     summary: Create a new session

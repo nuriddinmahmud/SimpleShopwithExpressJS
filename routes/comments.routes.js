@@ -15,6 +15,7 @@ const CommentRouter = express.Router();
 
 /**
  * @swagger
+<<<<<<< HEAD
  * tags:
  *   name: Comments
  *   description: API for managing comments
@@ -22,6 +23,8 @@ const CommentRouter = express.Router();
 
 /**
  * @swagger
+=======
+>>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  * /api/comments:
  *   post:
  *     summary: Create a new comment

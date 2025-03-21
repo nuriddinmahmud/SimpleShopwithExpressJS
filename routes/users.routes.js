@@ -92,12 +92,29 @@ UsersRouter.post("/register", register);
  *           schema:
  *             type: object
  *             properties:
+ *               fullName:
+ *                 type: string
  *               email:
  *                 type: string
+<<<<<<< HEAD
  *                 description: The email of the user
  *               otp:
  *                 type: string
  *                 description: The OTP sent to the user's email
+=======
+ *               phone:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *               regionID:
+ *                 type: integer
+ *               password:
+ *                 type: string
+ *               avatar:
+ *                 type: string
+ *               yearOfBirth:
+ *                 type: integer
+>>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  *     responses:
  *       200:
  *         description: Account activated successfully

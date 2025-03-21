@@ -15,6 +15,7 @@ const CategoryRouter = express.Router();
 
 /**
  * @swagger
+<<<<<<< HEAD
  * tags:
  *   name: Categories
  *   description: API for managing categories
@@ -22,6 +23,8 @@ const CategoryRouter = express.Router();
 
 /**
  * @swagger
+=======
+>>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  * /api/category:
  *   post:
  *     summary: Create a new category

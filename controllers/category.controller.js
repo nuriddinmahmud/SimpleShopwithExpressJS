@@ -10,7 +10,12 @@ async function getAll(req, res) {
       const categories = await Category.findAll({
         where: { name: req.query.name },
       });
+<<<<<<< HEAD
       return res.send(categories);
+=======
+      res.send(categories);
+      return;
+>>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
     }
     const categories = await Category.findAll();
     res.send(categories);
