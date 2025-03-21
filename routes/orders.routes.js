@@ -1,10 +1,10 @@
 const express = require("express");
 const {
-  getAll,
-  getOne,
-  post,
-  update,
-  remove,
+  createOrder,
+  getOrders,
+  getOrderById,
+  deleteOrder,
+  updateOrder,
 } = require("../controllers/orders.controller");
 
 const verifyToken = require("../middleware/verifyToken");
@@ -14,50 +14,80 @@ const OrderRouter = express.Router();
 
 /**
  * @swagger
- * /orders:
- *   get:
- *     summary: Get all orders
- *     tags: [Orders]
- *     parameters:
- *       - in: query
- *         name: userID
- *         schema:
- *           type: integer
- *         description: Filter orders by user ID
- *     responses:
- *       200:
- *         description: List of all orders
+ * tags:
+ *   name: Orders
+ *   description: Buyurtmalarni boshqarish
  */
-OrderRouter.get("/", getAll);
 
 /**
  * @swagger
- * /orders/{id}:
+ * /api/orders:
  *   get:
- *     summary: Get an order by ID
+ *     summary: Barcha buyurtmalarni olish (filtr, sort, pagination)
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *         description: Mahsulot nomi bo‘yicha filtr
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Saralash tartibi (asc - o‘sish bo‘yicha, desc - kamayish bo‘yicha)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Sahifa raqami
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Har bir sahifadagi elementlar soni
+ *     responses:
+ *       200:
+ *         description: Buyurtmalar ro‘yxati qaytarildi
+ *       400:
+ *         description: Noto‘g‘ri so‘rov parametrlari
+ *       401:
+ *         description: Ruxsatsiz foydalanuvchi
+ */
+OrderRouter.get("/", verifyToken, getOrders);
+
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Bitta buyurtmani olish
  *     tags: [Orders]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Buyurtma ID'si
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
- *         description: Order found
+ *         description: Buyurtma topildi va qaytarildi
  *       404:
- *         description: Not found
+ *         description: Buyurtma topilmadi
  */
-OrderRouter.get("/:id", getOne);
+OrderRouter.get("/:id", verifyToken, getOrderById);
 
 /**
  * @swagger
- * /orders:
+ * /api/orders:
  *   post:
- *     summary: Create a new order
+ *     summary: Yangi buyurtma yaratish
+ *     tags: [Orders]
  *     security:
  *       - BearerAuth: []
- *     tags: [Orders]
  *     requestBody:
  *       required: true
  *       content:
@@ -67,32 +97,30 @@ OrderRouter.get("/:id", getOne);
  *             properties:
  *               userID:
  *                 type: integer
- *               totalAmount:
- *                 type: number
- *               status:
- *                 type: string
+ *                 description: Foydalanuvchi ID'si
  *     responses:
  *       201:
- *         description: Order created successfully
+ *         description: Buyurtma muvaffaqiyatli yaratildi
  *       400:
- *         description: Validation error
+ *         description: Yaroqsiz ma’lumotlar
  */
-OrderRouter.post("/", verifyToken, post);
+OrderRouter.post("/", verifyToken, checkRole(["Admin"]), createOrder);
 
 /**
  * @swagger
- * /orders/{id}:
+ * /api/orders/{id}:
  *   patch:
- *     summary: Update an order
+ *     summary: Buyurtmani yangilash
+ *     tags: [Orders]
  *     security:
  *       - BearerAuth: []
- *     tags: [Orders]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Buyurtma ID'si
  *         schema:
- *           type: integer
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -100,38 +128,47 @@ OrderRouter.post("/", verifyToken, post);
  *           schema:
  *             type: object
  *             properties:
- *               status:
- *                 type: string
+ *               userID:
+ *                 type: integer
+ *                 description: Foydalanuvchi ID'si
  *     responses:
  *       200:
- *         description: Order updated successfully
+ *         description: Buyurtma muvaffaqiyatli yangilandi
  *       400:
- *         description: Validation error
+ *         description: Noto‘g‘ri so‘rov ma’lumotlari
  *       404:
- *         description: Order not found
+ *         description: Buyurtma topilmadi
  */
-OrderRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
+OrderRouter.patch(
+  "/:id",
+  verifyToken,
+  checkRole(["Admin", "SuperAdmin"]),
+  updateOrder
+);
 
 /**
  * @swagger
- * /orders/{id}:
+ * /api/orders/{id}:
  *   delete:
- *     summary: Delete an order
+ *     summary: Buyurtmani o‘chirish
+ *     tags: [Orders]
  *     security:
  *       - BearerAuth: []
- *     tags: [Orders]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Buyurtma ID'si
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
- *         description: Successfully deleted
+ *         description: Buyurtma muvaffaqiyatli o‘chirildi
+ *       403:
+ *         description: Ruxsatsiz foydalanuvchi (faqat adminlar o‘chira oladi)
  *       404:
- *         description: Not found
+ *         description: Buyurtma topilmadi
  */
-OrderRouter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
+OrderRouter.delete("/:id", verifyToken, checkRole(["Admin"]), deleteOrder);
 
 module.exports = OrderRouter;

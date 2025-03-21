@@ -15,12 +15,19 @@ const RegionRouter = express.Router();
 
 /**
  * @swagger
- * /regions:
+ * tags:
+ *   name: Regions
+ *   description: API for managing regions
+ */
+
+/**
+ * @swagger
+ * /api/regions:
  *   post:
  *     summary: Create a new region
+ *     tags: [Regions]
  *     security:
  *       - BearerAuth: []
- *     tags: [Regions]
  *     requestBody:
  *       required: true
  *       content:
@@ -30,22 +37,29 @@ const RegionRouter = express.Router();
  *             properties:
  *               name:
  *                 type: string
+ *                 description: The name of the region
  *     responses:
  *       200:
- *         description: Successfully created
- *       422:
- *         description: Validation error
+ *         description: Region created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Region'
+ *       400:
+ *         description: Bad request. Validation error
+ *       401:
+ *         description: Unauthorized. Token is missing or invalid
+ *       403:
+ *         description: Forbidden. User does not have the required role
+ *       500:
+ *         description: Internal server error
  */
-RegionRouter.post(
-  "/",
-  verifyToken,
-  selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
-  create
-);
+
+RegionRouter.post("/", verifyToken, selfPolice(["Admin"]), create);
 
 /**
  * @swagger
- * /regions:
+ * /api/regions:
  *   get:
  *     summary: Get all regions
  *     tags: [Regions]
@@ -54,57 +68,100 @@ RegionRouter.post(
  *         name: search
  *         schema:
  *           type: string
- *         description: Search for regions by name
+ *         description: Search regions by name
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
- *         description: Page number
+ *         description: Page number for pagination
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
- *         description: Number of regions per page
+ *         description: Number of items per page
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *         description: Field to sort by (e.g., "name")
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *         description: Sort order (ASC or DESC)
  *     responses:
  *       200:
- *         description: List of all regions
+ *         description: List of regions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   description: Total number of regions
+ *                 page:
+ *                   type: integer
+ *                   description: Current page number
+ *                 pageSize:
+ *                   type: integer
+ *                   description: Number of items per page
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Region'
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
  */
+
 RegionRouter.get("/", getAll);
 
 /**
  * @swagger
- * /regions/{id}:
+ * /api/regions/{id}:
  *   get:
  *     summary: Get a region by ID
  *     tags: [Regions]
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
- *           type: string
+ *           type: integer
+ *         required: true
+ *         description: The region ID
  *     responses:
  *       200:
  *         description: Region found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Region'
  *       404:
- *         description: Not found
+ *         description: Region not found
+ *       500:
+ *         description: Internal server error
  */
+
 RegionRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /regions/{id}:
+ * /api/regions/{id}:
  *   patch:
- *     summary: Update a region
+ *     summary: Update a region by ID
+ *     tags: [Regions]
  *     security:
  *       - BearerAuth: []
- *     tags: [Regions]
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
- *           type: string
+ *           type: integer
+ *         required: true
+ *         description: The region ID
  *     requestBody:
  *       required: true
  *       content:
@@ -114,34 +171,84 @@ RegionRouter.get("/:id", getOne);
  *             properties:
  *               name:
  *                 type: string
+ *                 description: The updated name of the region
  *     responses:
  *       200:
- *         description: Successfully updated
+ *         description: Region updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Region'
+ *       400:
+ *         description: Bad request. Validation error
+ *       401:
+ *         description: Unauthorized. Token is missing or invalid
+ *       403:
+ *         description: Forbidden. User does not have the required role
  *       404:
- *         description: Not found
+ *         description: Region not found
+ *       500:
+ *         description: Internal server error
  */
-RegionRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
+
+RegionRouter.patch(
+  "/:id",
+  verifyToken,
+  checkRole(["Admin", "SuperAdmin"]),
+  update
+);
 
 /**
  * @swagger
- * /regions/{id}:
+ * /api/regions/{id}:
  *   delete:
- *     summary: Delete a region
+ *     summary: Delete a region by ID
+ *     tags: [Regions]
  *     security:
  *       - BearerAuth: []
- *     tags: [Regions]
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
- *           type: string
+ *           type: integer
+ *         required: true
+ *         description: The region ID
  *     responses:
  *       200:
- *         description: Successfully deleted
+ *         description: Region deleted successfully
+ *       401:
+ *         description: Unauthorized. Token is missing or invalid
+ *       403:
+ *         description: Forbidden. User does not have the required role
  *       404:
- *         description: Not found
+ *         description: Region not found
+ *       500:
+ *         description: Internal server error
  */
+
 RegionRouter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Region:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: The auto-generated ID of the region
+ *         name:
+ *           type: string
+ *           description: The name of the region
+ *       example:
+ *         id: 1
+ *         name: "Tashkent"
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 module.exports = RegionRouter;

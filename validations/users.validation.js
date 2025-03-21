@@ -18,13 +18,11 @@ function usersValidation(data) {
       .min(8)
       .pattern(/^[a-zA-Z0-9]{3,30}$/)
       .required(),
-    role: Joi.string()
-      .valid("Admin", "User", "Seller", "SuperAdmin")
-      .required(),
+    role: Joi.string().valid("Admin", "User", "SuperAdmin").required(),
     avatar: Joi.string().required(),
     status: Joi.string().valid("Active", "Inactive").optional(),
     regionID: Joi.number().required(),
-    yearOfBirth: Joi.number().required()
+    yearOfBirth: Joi.number().required(),
   });
 
   return Users.validate(data, { abortEarly: true });

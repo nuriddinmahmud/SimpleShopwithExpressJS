@@ -10,8 +10,8 @@ const create = async (req, res) => {
     const { error, value } = regionsValidation(req.body);
     if (error) return res.status(422).send({ error: error.details[0].message });
 
-    const newRegions = await Regions.create(value);
-    res.status(200).send({ data: newRegions });
+    const newRegion = await Regions.create(value);
+    res.status(200).send({ data: newRegion });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -49,11 +49,11 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
   try {
     const { id } = req.params;
-    const regions = await Regions.findByPk({ id });
+    const region = await Regions.findByPk(id);
 
-    if (!regions) return res.status(404).json({ message: "Regions not found" });
+    if (!region) return res.status(404).json({ message: "Region not found" });
 
-    res.status(200).send({ data: regions });
+    res.status(200).send({ data: region });
   } catch (err) {
     res.status(400).send({ error: err.message });
   }
@@ -65,8 +65,8 @@ const update = async (req, res) => {
     const { error, value } = regionsValidationUpdate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
 
-    let updateRegion = await Regions.update(value, { where: { id } });
-    if (!updateRegion) {
+    const [updated] = await Regions.update(value, { where: { id } });
+    if (!updated) {
       return res.status(404).send({ message: "Region not found ❗" });
     }
 
@@ -80,11 +80,10 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    let deleteRegion = await Regions.destroy({ where: { id } });
-    if (!deleteRegion) {
+    const deleted = await Regions.destroy({ where: { id } });
+    if (!deleted) {
       return res.status(404).send({ message: "Region not found ❗" });
     }
-
     res.status(200).send({ message: "Region deleted successfully" });
   } catch (err) {
     res.status(400).send({ error: err.message });

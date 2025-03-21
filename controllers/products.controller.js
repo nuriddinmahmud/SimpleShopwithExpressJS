@@ -12,8 +12,8 @@ const create = async (req, res) => {
     const { error, value } = productsValidation(req.body);
     if (error) return res.status(422).send({ error: error.details[0].message });
 
-    const newProducts = await Products.create(value);
-    res.status(200).send({ data: newProducts });
+    const newProduct = await Products.create(value);
+    res.status(200).send({ data: newProduct });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -30,7 +30,6 @@ const getAll = async (req, res) => {
     if (userID) {
       whereClause.userID = userID;
     }
-
     if (categoryID) {
       whereClause.categoryID = categoryID;
     }
@@ -42,7 +41,7 @@ const getAll = async (req, res) => {
       where: whereClause,
       include: [
         { model: Category, attributes: ["id", "name"] },
-        { model: Users, attributes: ["id", "name"] },
+        { model: Users, attributes: ["id", "fullName"] },
       ],
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
@@ -65,7 +64,7 @@ const getOne = async (req, res) => {
     const product = await Products.findByPk(id, {
       include: [
         { model: Category, attributes: ["id", "name"] },
-        { model: Users, attributes: ["id", "name"] },
+        { model: Users, attributes: ["id", "fullName"] },
       ],
     });
 
@@ -83,9 +82,9 @@ const update = async (req, res) => {
     const { error, value } = productsValidationUpdate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
 
-    let updateProduct = await Products.update(value, { where: { id } });
-    if (!updateProduct) {
-      return res.status(404).send({ message: "Products not found ❗" });
+    const [updated] = await Products.update(value, { where: { id } });
+    if (!updated) {
+      return res.status(404).send({ message: "Product not found ❗" });
     }
 
     const result = await Products.findByPk(id);
@@ -98,12 +97,11 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    let deleteProducts = await Products.destroy({ where: { id } });
-    if (!deleteProducts) {
-      return res.status(404).send({ message: "Products not found ❗" });
+    const deleted = await Products.destroy({ where: { id } });
+    if (!deleted) {
+      return res.status(404).send({ message: "Product not found ❗" });
     }
-
-    res.status(200).send({ message: "Products deleted successfully" });
+    res.status(200).send({ message: "Product deleted successfully" });
   } catch (err) {
     res.status(400).send({ error: err.message });
   }

@@ -12,6 +12,7 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const path = require("path");
+const sendSms = require("../config/eskiz.js");
 
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
@@ -25,15 +26,6 @@ const transporter = nodemailer.createTransport({
 });
 
 totp.options = { step: 1800, digits: 6 };
-
-const deleteOldImage = (imgPath) => {
-  if (imgPath) {
-    const fullPath = path.join("uploads", imgPath);
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-    }
-  }
-};
 
 async function register(req, res) {
   try {
@@ -187,6 +179,46 @@ async function getNewAccessToken(req, res) {
   }
 }
 
+async function sendOtpPhone(req, res) {
+  try {
+    const user = await Users.findOne({ where: { phone: req.body.phone } });
+    if (!user) {
+      res.status(404).send({ message: "User not found" });
+      return;
+    }
+    const token = await sendSms(req.body.phone);
+    res.status(200).send({ message: "OTP sent successfully", otp: token });
+  } catch (error) {
+    res.status(400).send({ error_message: error.message });
+  }
+}
+
+async function verifyOtpPhone(req, res) {
+  try {
+    const user = await Users.findOne({ where: { phone: req.body.phone } });
+    if (!user) {
+      res.status(404).send({ message: "User not found" });
+      return;
+    }
+    const match = totp.verify({
+      token: req.body.otp,
+      secret: req.body.phone + process.env.ESKIZ_KEY || "eskizSecret",
+    });
+    if (!match) {
+      res.status(403).send({ message: "OTP is incorrect" });
+      return;
+    }
+    if (user.status === "Inactive") {
+      await user.update({ status: "Active" });
+      res.status(200).send({ message: "Account activated successfully" });
+      return;
+    }
+    res.status(200).send({ message: "Account activated successfully" });
+  } catch (error) {
+    res.status(400).send({ error_message: error.message });
+  }
+}
+
 async function findAll(req, res) {
   try {
     let { role } = req.user;
@@ -209,8 +241,8 @@ async function findAll(req, res) {
         include: [
           {
             model: Regions,
-            as: "region", 
-            attributes: ["id", "name"], 
+            as: "Region",
+            attributes: ["id", "name"],
           },
         ],
       });
@@ -240,8 +272,8 @@ async function findAll(req, res) {
         ],
         include: [
           {
-            model: Region,
-            as: "region",
+            model: Regions,
+            as: "Region",
             attributes: ["id", "name"],
           },
         ],
@@ -322,22 +354,19 @@ async function remove(req, res) {
     let findUser = await Users.findByPk(id);
     if (!findUser)
       return res.status(404).send({ message: "Users not found ❗️" });
-    if(findUser.role == "Admin"){
+    if (findUser.role == "Admin") {
       return res.status(403).send({ message: "Nobody can destroy admin ❗️" });
     }
-    // let deletedUser = await Users.destroy({
-    //   where: { id, role: { [Op.in]: ["Users"] } },
-    // });
-    await findUser.destroy()
-    // if (!deletedUser)
-      // return res.status(403).send({ message: "Only users can be deleted ❗️" });
-
-    res.status(200).send({ message: "Users deleted successfully" });
-  } catch (error) {
-    res.status(400).send({ error_message: error.message });
+    let deletedUser = await Users.destroy({
+      where: { id, role: { [Op.in]: ["Users"] } },
+    });
+    await findUser.destroy();
+    if (!deletedUser)
+      return res.status(403).send({ message: "Only users can be deleted ❗️" });
+  } catch (e) {
+    res.status(400).send({ error_message: e.message });
   }
 }
-
 module.exports = {
   register,
   verifyOtp,
@@ -347,6 +376,7 @@ module.exports = {
   update,
   remove,
   promoteToAdmin,
-  deleteOldImage,
   getNewAccessToken,
+  sendOtpPhone,
+  verifyOtpPhone,
 };

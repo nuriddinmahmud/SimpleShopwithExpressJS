@@ -8,6 +8,7 @@ const swaggerUi = require("swagger-ui-express");
 const sequelize = require("./config/database.js");
 const multer = require("multer");
 const path = require("path");
+const app = express();
 
 dotenv.config();
 const PORT = process.env.PORT || 3006;
@@ -56,7 +57,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const app = express();
 app.use(express.json());
 app.use(
   cors({
@@ -71,16 +71,13 @@ app.use("/api", mainRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /**
+ *
  * @swagger
  * /upload:
  *   post:
  *     summary: Upload an image
  *     description: Uploads an image file and returns its URL.
- *     tags: [Uploads]
- *     security:
- *       - BearerAuth: []
  *     requestBody:
- *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -101,12 +98,13 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *                 url:
  *                   type: string
  *                   description: The URL of the uploaded image.
- *                   example: "http://localhost:3006/image/filename.jpg"
+ *                   example: "http://localhost:2000/image/filename.jpg"
  *       400:
  *         description: Bad request. No file uploaded or invalid file type.
  *       500:
  *         description: Internal server error.
  */
+
 app.post("/upload", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res
@@ -122,7 +120,7 @@ async function shop() {
   try {
     await sequelize.authenticate();
     console.log("Connected to database successfully ✅");
-    // await sequelize.sync({force: true})
+    // await sequelize.sync({force: true});
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   } catch (error) {
     console.log(error.message);

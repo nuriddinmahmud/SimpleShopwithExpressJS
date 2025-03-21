@@ -13,4 +13,4 @@ function sessionsValidation(data) {
   return sessionSchema.validate(data, { abortEarly: false });
 }
 
-module.exports =  sessionsValidation;
+module.exports = sessionsValidation;

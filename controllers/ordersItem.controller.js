@@ -1,83 +1,181 @@
-const OrdersItem = require("../models/ordersItem.model.js");
-const Orders = require("../models/orders.model.js");
-const ordersItemValidation = require("../validations/ordersItem.validation");
+const Orders = require("../models/orders.model");
+const Users = require("../models/users.model");
+const OrdersItem = require("../models/ordersItem.model");
+const Products = require("../models/products.model");
+const {
+  ordersItemValidation,
+  ordersItemValidationUpdate,
+} = require("../validations/ordersItem.validation.js");
+const { Op } = require("sequelize");
 
-async function getOne(req, res, id) {
+const createOrder = async (req, res) => {
+  const { error } = ordersItemValidation(req.body);
+  if (error) return res.status(422).send({ error: error.details[0].message });
   try {
-    let data = await OrdersItem.findOne({ where: { id: id } });
-    res.send(data);
-  } catch (error) {
-    res.send(error.message);
-  }
-}
+    const { userID, items } = req.body;
 
-async function getAll(req, res) {
-  try {
-    if (req.query.userID) {
-      let data = await OrdersItem.findAll({
-        where: { userID: req.query.userID },
-      });
-      res.send(data);
-      return;
+    const user = await Users.findByPk(userID);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-    let data = await OrdersItem.findAll();
-    res.send(data);
-  } catch (error) {
-    res.send(error.message);
-  }
-}
 
-async function post(req, res) {
-  try {
-    const { error } = ordersItemValidation.validate(req.body);
-    if (error) {
-      res.send(error.message);
-      return;
+    const newOrder = await Orders.create({ userID });
+
+    if (items && items.length > 0) {
+      const orderItems = items.map((item) => ({
+        orderID: newOrder.id,
+        productID: item.productID,
+        count: item.count,
+      }));
+
+      await OrdersItem.bulkCreate(orderItems);
     }
-    const ord = await Orders.create({ userID: req.userID });
 
-    const order = await OrdersItem.create({
-      count: req.body.count,
-      orderID: ord.id,
-      userID: req.userID,
+    res
+      .status(201)
+      .json({ message: "Order created successfully", order: newOrder });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getOrders = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = "createdAt",
+      order = "DESC",
+      userID,
+    } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = {};
+    if (userID) {
+      whereClause.userID = userID;
+    }
+
+    const orders = await Orders.findAndCountAll({
+      where: whereClause,
+      include: [
+        {
+          model: Users,
+          attributes: ["id", "fullName", "email"],
+        },
+        {
+          model: OrdersItem,
+          include: [{ model: Products, attributes: ["id", "name", "price"] }],
+        },
+      ],
+      order: [[sortBy, order]],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
     });
-    res.send(order);
-  } catch (error) {
-    res.send(error.message);
-  }
-}
 
-async function update(req, res) {
+    res.json({
+      totalOrders: orders.count,
+      totalPages: Math.ceil(orders.count / limit),
+      currentPage: parseInt(page),
+      orders: orders.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getOrderById = async (req, res) => {
   try {
-    const { error } = ordersItemValidation.validate(req.body);
-    if (error) {
-      res.send(error.message);
-      return;
-    }
-    const order = await OrdersItem.findByPk(req.params.id);
+    const { id } = req.params;
+
+    const order = await Orders.findByPk(id, {
+      include: [
+        {
+          model: Users,
+          attributes: ["id", "fullName", "email"],
+        },
+        {
+          model: OrdersItem,
+          include: [{ model: Products, attributes: ["id", "name", "price"] }],
+        },
+      ],
+    });
+
     if (!order) {
-      res.status(404).send("Not found");
-      return;
+      return res.status(404).json({ message: "Order not found" });
     }
-    await order.update(req.body);
-    res.send(order);
-  } catch (error) {
-    res.send(error.message);
-  }
-}
 
-async function remove(req, res, id) {
+    res.json(order);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const patchOrder = async (req, res) => {
+  const { error } = ordersItemValidationUpdate(req.body);
+  if (error) return res.status(422).send({ error: error.details[0].message });
   try {
-    let ord = await OrdersItem.findOne({ where: { id: req.params.id } });
-    if (!ord) {
-      res.status(404).send("Not found");
-      return;
-    }
-    await ord.destroy();
-    res.send("Deleted");
-  } catch (error) {
-    res.send(error.message);
-  }
-}
+    const { id } = req.params;
+    const { userID, items } = req.body;
 
-module.exports = { getOne, getAll, post, update, remove };
+    const order = await Orders.findByPk(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (userID) {
+      const user = await Users.findByPk(userID);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      order.userID = userID;
+    }
+
+    await order.save();
+
+    if (items && items.length > 0) {
+      await OrdersItem.destroy({ where: { orderID: id } });
+
+      const orderItems = items.map((item) => ({
+        orderID: id,
+        productID: item.productID,
+        count: item.count,
+      }));
+
+      await OrdersItem.bulkCreate(orderItems);
+    }
+
+    res.json({ message: "Order updated successfully", order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Orders.findByPk(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    await OrdersItem.destroy({ where: { orderID: id } });
+    await order.destroy();
+    res.json({ message: "Order and associated items deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = {
+  createOrder,
+  getOrders,
+  getOrderById,
+  deleteOrder,
+  patchOrder,
+};

@@ -1,10 +1,10 @@
 const express = require("express");
 const {
-  getAll,
-  getOne,
-  update,
-  remove,
-  post,
+  createOrder,
+  getOrders,
+  getOrderById,
+  deleteOrder,
+  patchOrder,
 } = require("../controllers/ordersItem.controller");
 
 const verifyToken = require("../middleware/verifyToken");
@@ -15,12 +15,17 @@ const ordersItemRouter = express.Router();
 
 /**
  * @swagger
- * /orders-items:
+ * tags:
+ *   name: OrdersItem
+ *   description: Order Items management
+ */
+
+/**
+ * @swagger
+ * /api/ordersItem:
  *   post:
- *     summary: Create a new order item
- *     security:
- *       - BearerAuth: []
- *     tags: [Orders Items]
+ *     summary: Create a new order with multiple items
+ *     tags: [OrdersItem]
  *     requestBody:
  *       required: true
  *       content:
@@ -29,76 +34,98 @@ const ordersItemRouter = express.Router();
  *             type: object
  *             properties:
  *               count:
- *                 type: integer
+ *                type: integer
  *               orderID:
- *                 type: string
- *               userID:
- *                 type: string
+ *                type: integer
+ *               productID:
+ *                type: integer
  *     responses:
- *       200:
- *         description: Successfully created
+ *       201:
+ *         description: Order created successfully
  *       400:
- *         description: Validation error
+ *         description: Invalid input data
  */
-ordersItemRouter.post(
-  "/",
-  verifyToken,
-  selfPolice(["Admin", "User", "Seller", "SuperAdmin"]),
-  post
-);
+
+ordersItemRouter.post("/", verifyToken, selfPolice(["Admin"]), createOrder);
 
 /**
  * @swagger
- * /orders-items:
+ * /api/ordersItem:
  *   get:
- *     summary: Get all order items
- *     tags: [Orders Items]
+ *     summary: Get all orders
+ *     tags: [OrdersItem]
  *     parameters:
  *       - in: query
  *         name: userID
  *         schema:
+ *           type: integer
+ *         description: Filter orders by user ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of results per page
+ *       - in: query
+ *         name: sortBy
+ *         schema:
  *           type: string
- *         description: Filter order items by user ID
+ *           default: "createdAt"
+ *         description: Sorting field
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Sorting order
  *     responses:
  *       200:
- *         description: List of all order items
+ *         description: Orders retrieved successfully
+ *       400:
+ *         description: Invalid request parameters
  */
-ordersItemRouter.get("/", getAll);
+
+ordersItemRouter.get("/", getOrders);
 
 /**
  * @swagger
- * /orders-items/{id}:
+ * /api/ordersItem/{id}:
  *   get:
- *     summary: Get an order item by ID
- *     tags: [Orders Items]
+ *     summary: Get a specific order by ID
+ *     tags: [OrdersItem]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
+ *         description: ID of the order
  *     responses:
  *       200:
- *         description: Order item found
+ *         description: Order retrieved successfully
  *       404:
- *         description: Not found
+ *         description: Order not found
  */
-ordersItemRouter.get("/:id", getOne);
+
+ordersItemRouter.get("/:id", getOrderById);
 
 /**
  * @swagger
- * /orders-items/{id}:
+ * /api/ordersItem/{id}:
  *   patch:
- *     summary: Update an order item
- *     security:
- *       - BearerAuth: []
- *     tags: [Orders Items]
+ *     summary: Update an order
+ *     tags: [OrdersItem]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
+ *         description: ID of the order to update
  *     requestBody:
  *       required: true
  *       content:
@@ -106,36 +133,53 @@ ordersItemRouter.get("/:id", getOne);
  *           schema:
  *             type: object
  *             properties:
- *               count:
+ *               userID:
  *                 type: integer
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     count:
+ *                       type: integer
+ *                     productID:
+ *                       type: integer
  *     responses:
  *       200:
- *         description: Successfully updated
+ *         description: Order updated successfully
+ *       400:
+ *         description: Invalid input data
  *       404:
- *         description: Not found
+ *         description: Order not found
  */
-ordersItemRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
+
+ordersItemRouter.patch(
+  "/:id",
+  verifyToken,
+  checkRole(["Admin", "SuperAdmin"]),
+  patchOrder
+);
 
 /**
  * @swagger
- * /orders-items/{id}:
+ * /aoi/ordersItem/{id}:
  *   delete:
- *     summary: Delete an order item
- *     security:
- *       - BearerAuth: []
- *     tags: [Orders Items]
+ *     summary: Delete an order
+ *     tags: [OrdersItem]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
+ *         description: ID of the order to delete
  *     responses:
  *       200:
- *         description: Successfully deleted
+ *         description: Order deleted successfully
  *       404:
- *         description: Not found
+ *         description: Order not found
  */
-ordersItemRouter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
+
+ordersItemRouter.delete("/:id", verifyToken, checkRole(["Admin"]), deleteOrder);
 
 module.exports = ordersItemRouter;

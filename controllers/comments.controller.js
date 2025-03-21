@@ -12,8 +12,8 @@ const create = async (req, res) => {
     const { error, value } = commentsValidation(req.body);
     if (error) return res.status(422).send({ error: error.details[0].message });
 
-    const newComments = await Comments.create(value);
-    res.status(200).send({ data: newComments });
+    const newComment = await Comments.create(value);
+    res.status(200).send({ data: newComment });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -25,12 +25,11 @@ const getAll = async (req, res) => {
     let whereClause = {};
 
     if (search) {
-      whereClause.description = { [Op.iLike]: `%${search}%` }; // Fixed field name to "description"
+      whereClause.description = { [Op.iLike]: `%${search}%` };
     }
     if (userID) {
       whereClause.userID = userID;
     }
-
     if (productID) {
       whereClause.productID = productID;
     }
@@ -69,8 +68,9 @@ const getOne = async (req, res) => {
       ],
     });
 
-    if (!comment)
+    if (!comment) {
       return res.status(404).json({ message: "Comment not found!" });
+    }
     res.status(200).send({ data: comment });
   } catch (err) {
     res.status(400).send({ error: err.message });
@@ -83,8 +83,8 @@ const update = async (req, res) => {
     const { error, value } = commentsValidationUpdate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
 
-    let updateComments = await Comments.update(value, { where: { id } });
-    if (!updateComments[0]) {
+    const [updated] = await Comments.update(value, { where: { id } });
+    if (!updated) {
       return res.status(404).send({ message: "Comment not found ❗" });
     }
 
@@ -98,15 +98,14 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    let deleteComments = await Comments.destroy({ where: { id } });
-    if (!deleteComments) {
-      return res.status(404).send({ message: "Comment not found ❗" }); 
+    const deleted = await Comments.destroy({ where: { id } });
+    if (!deleted) {
+      return res.status(404).send({ message: "Comment not found ❗" });
     }
-
-    res.status(200).send({ message: "Comment deleted successfully" }); 
+    res.status(200).send({ message: "Comment deleted successfully" });
   } catch (err) {
     res.status(400).send({ error: err.message });
   }
 };
 
-module.exports = { create, getAll, getOne, update, remove }; 
+module.exports = { create, getAll, getOne, update, remove };

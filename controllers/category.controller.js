@@ -1,5 +1,8 @@
 const Category = require("../models/category.model");
-const Validation = require("../validations/category.validation");
+const {
+  categoryValidation,
+  categoryValidationUpdate,
+} = require("../validations/category.validation.js");
 
 async function getAll(req, res) {
   try {
@@ -7,13 +10,10 @@ async function getAll(req, res) {
       const categories = await Category.findAll({
         where: { name: req.query.name },
       });
-      res.send(categories);
-      return;
-    } else {
-      res.send(`${req.query.name} not found`);
+      return res.send(categories);
     }
-    const category = await Category.findAll();
-    res.send(category);
+    const categories = await Category.findAll();
+    res.send(categories);
   } catch (error) {
     res.status(404).send(error.message);
   }
@@ -21,8 +21,11 @@ async function getAll(req, res) {
 
 async function getOne(req, res) {
   try {
-    const categories = await Category.findOne(req.params.id);
-    res.send(categories);
+    const category = await Category.findByPk(req.params.id);
+    if (!category) {
+      return res.status(404).send("Category not found");
+    }
+    res.send(category);
   } catch (error) {
     res.status(404).send(error.message);
   }
@@ -30,55 +33,48 @@ async function getOne(req, res) {
 
 async function post(req, res) {
   try {
+    const { error } = categoryValidation.validate(req.body);
+    if (error) {
+      return res.status(400).send(error.message);
+    }
     const cat = await Category.findOne({ where: { name: req.body.name } });
     if (cat) {
-      res.status(400).send("Category already exists!");
-      return;
+      return res.status(400).send("Category already exists!");
     }
-    const { error } = Validation.categoryValidation.validate(req.body);
-    if (error) {
-      res.send(error.message);
-      return;
-    }
-    const categories = await Category.create(req.body);
-    res.send(categories);
+    const category = await Category.create(req.body);
+    res.send(category);
   } catch (error) {
-    res.send(error.message);
+    res.status(400).send(error.message);
   }
 }
 
 async function update(req, res) {
   try {
-    const { error } = Validation.categoryValidationUpdate.validate(req.body);
+    const { error } = categoryValidationUpdate.validate(req.body);
     if (error) {
-      res.send(error.message);
-      return;
+      return res.status(400).send(error.message);
     }
-    let id = req.params.id;
-    let category = await Category.findByPk(id);
+    const category = await Category.findByPk(req.params.id);
     if (!category) {
-      res.status(404).send("Not found");
-      return;
+      return res.status(404).send("Category not found");
     }
     await category.update(req.body);
     res.send(category);
   } catch (error) {
-    res.send(error.message);
+    res.status(400).send(error.message);
   }
 }
 
 async function remove(req, res) {
   try {
-    let id = req.params.id;
-    const category = await Category.findByPk(id);
+    const category = await Category.findByPk(req.params.id);
     if (!category) {
-      res.status(404).send("Not found");
-      return;
+      return res.status(404).send("Category not found");
     }
     await category.destroy();
     res.send("Deleted");
   } catch (error) {
-    res.send(error.message);
+    res.status(400).send(error.message);
   }
 }
 

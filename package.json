@@ -21,6 +21,7 @@
   "homepage": "https://github.com/nuriddinmahmud/SimpleShopwithExpressJS#readme",
   "description": "",
   "dependencies": {
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "device-detector-js": "^3.0.3",

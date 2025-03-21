@@ -7,7 +7,7 @@ function selfPolice(data) {
       return;
     }
 
-    res.status(405).send({ message: " Not allowed ❗" });
+    res.status(405).send({ message: "Not allowed ❗" });
   };
 }
 

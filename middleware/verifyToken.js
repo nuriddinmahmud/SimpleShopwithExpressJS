@@ -1,27 +1,19 @@
-const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 
-dotenv.config();
-const accessKey = process.env.ACCESS_KEY || "accessKey";
-
-function verifyToken(req, res, next) {
-  try {
-    let header = req.header("Authorization").split(" ");
-    let [_, token] = header;
-
-    if (!token) {
-      return res.status(401).send({ message: "Token not found ❗" });
-    }
-
-    let accessSecret = accessKey;
-    let data = jwt.decode(token, accessSecret);
-    req.user = data;
-    req.userID = data.id;
-
-    next();
-  } catch (error) {
-    res.status(400).send({ error_message: error.message });
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error_message: "Invalid token format!" });
   }
-}
 
+  const token = authHeader.split(" ")[1]; 
+
+  jwt.verify(token,  (err, user) => {
+    if (err) {
+      return res.status(403).json({ error_message: "Invalid token!" });
+    }
+    req.user = user; 
+    next();
+  });
+};
 module.exports = verifyToken;
