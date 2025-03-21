@@ -48,7 +48,10 @@ const RegionRouter = express.Router();
  *         description: Internal server error
  */
 
-RegionRouter.post("/", verifyToken, selfPolice(["Admin"]), create);
+RegionRouter.post("/",
+  // verifyToken,
+  // selfPolice(["Admin"]),
+  create);
 
 /**
  * @swagger

@@ -13,6 +13,8 @@ const verifyToken = (req, res, next) => {
       return res.status(403).json({ error_message: "Invalid token!" });
     }
     req.user = user;
+    req.userRole = user.role;
+    req.userID = user.id;
     next();
   });
 };

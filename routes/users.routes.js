@@ -92,22 +92,10 @@ UsersRouter.post("/register", register);
  *           schema:
  *             type: object
  *             properties:
- *               fullName:
- *                 type: string
  *               email:
  *                 type: string
- *               phone:
+ *               otp:
  *                 type: string
- *               role:
- *                 type: string
- *               regionID:
- *                 type: integer
- *               password:
- *                 type: string
- *               avatar:
- *                 type: string
- *               yearOfBirth:
- *                 type: integer
  *     responses:
  *       200:
  *         description: Account activated successfully
@@ -238,7 +226,7 @@ UsersRouter.patch("/promoteToAdmin/:id", promoteToAdmin);
  *         description: Internal server error
  */
 
-UsersRouter.get("/", findAll);
+UsersRouter.get("/", verifyToken, findAll);
 
 /**
  * @swagger
@@ -266,7 +254,7 @@ UsersRouter.get("/", findAll);
  *         description: Internal server error
  */
 
-UsersRouter.get("/:id", findOne);
+UsersRouter.get("/:id",verifyToken, findOne);
 
 /**
  * @swagger

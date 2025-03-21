@@ -5,6 +5,7 @@ const {
   getOrderById,
   deleteOrder,
   updateOrder,
+  getMyOrders
 } = require("../controllers/orders.controller");
 
 const verifyToken = require("../middleware/verifyToken");
@@ -105,16 +106,123 @@ OrderRouter.get("/:id", verifyToken, getOrderById);
  *           schema:
  *             type: object
  *             properties:
- *               userID:
- *                 type: integer
- *                 description: Foydalanuvchi ID'si
+ *               items:
+ *                 type: array
+ *                 description: Buyurtmadagi mahsulotlar
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productID:
+ *                       type: integer
+ *                       description: Mahsulot ID'si
+ *                     count:
+ *                       type: integer
+ *                       description: Mahsulot soni
  *     responses:
  *       201:
  *         description: Buyurtma muvaffaqiyatli yaratildi
  *       400:
  *         description: Yaroqsiz ma’lumotlar
  */
+
 OrderRouter.post("/", verifyToken, checkRole(["Admin"]), createOrder);
+
+/**
+ * @swagger
+ * /api/orders/my-orders:
+ *   get:
+ *     summary: Foydalanuvchining buyurtmalarini olish
+ *     tags: [Orders]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Sahifalash uchun sahifa raqami
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Har bir sahifada nechta buyurtma ko‘rsatilishi
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [id, createdAt, updatedAt]
+ *           default: id
+ *         description: Saralash uchun ustun nomi
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
+ *         description: Saralash tartibi (o‘sish yoki kamayish bo‘yicha)
+ *     responses:
+ *       200:
+ *         description: Foydalanuvchining buyurtmalari ro‘yxati
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalOrders:
+ *                   type: integer
+ *                   description: Jami buyurtmalar soni
+ *                 totalPages:
+ *                   type: integer
+ *                   description: Jami sahifalar soni
+ *                 currentPage:
+ *                   type: integer
+ *                   description: Hozirgi sahifa
+ *                 orders:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       userID:
+ *                         type: integer
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           fullName:
+ *                             type: string
+ *                           email:
+ *                             type: string
+ *                       items:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             productID:
+ *                               type: integer
+ *                             quantity:
+ *                               type: integer
+ *       401:
+ *         description: Avtorizatsiya talab qilinadi
+ *       403:
+ *         description: Ruxsat etilmagan (faqat admin)
+ *       500:
+ *         description: Server xatosi
+ */
+
+
+
+OrderRouter.get("/my-orders", verifyToken, checkRole(["Admin"]), getMyOrders);
 
 /**
  * @swagger

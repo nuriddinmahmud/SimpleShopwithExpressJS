@@ -8,37 +8,53 @@ const {
 const { Op } = require("sequelize");
 
 const createOrder = async (req, res) => {
-  const { error, value } = ordersValidation(req.body);
-  if (error) return res.status(422).send({ error: error.details[0].message });
   try {
-    const { userID, items } = req.body;
+    const { items } = req.body;
 
-    const user = await Users.findByPk(userID);
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Items are required" });
+    }
+
+    for (const item of items) {
+      const { error } = ordersValidation.validate(item);
+      if (error) return res.status(422).json({ error: error.details[0].message });
+    }
+
+    const user = await Users.findByPk(req.userID);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const newOrder = await Orders.create({ userID });
+    const transaction = await Orders.sequelize.transaction();
 
-    if (items && items.length > 0) {
+    try {
+      const newOrder = await Orders.create(
+        { userID: req.userID },
+        { transaction }
+      );
+
       const orderItems = items.map((item) => ({
         orderID: newOrder.id,
         productID: item.productID,
-        quantity: item.quantity,
-        price: item.price,
+        count: item.count,
+        userID: req.userID,
       }));
 
-      await OrdersItem.bulkCreate(orderItems);
-    }
+      await OrdersItem.bulkCreate(orderItems, { transaction });
 
-    res
-      .status(201)
-      .json({ message: "Order created successfully", order: newOrder });
+      await transaction.commit();
+
+      res.status(201).json({ message: "Order created successfully", order: orderItems });
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 const getOrders = async (req, res) => {
   try {
@@ -66,6 +82,47 @@ const getOrders = async (req, res) => {
         {
           model: OrdersItem,
         },
+      ],
+      order: [[sortBy, order]],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+    });
+
+    res.json({
+      totalOrders: orders.count,
+      totalPages: Math.ceil(orders.count / limit),
+      currentPage: parseInt(page),
+      orders: orders.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getMyOrders = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = "id",
+      order = "DESC",
+      userID,
+    } = req.query;
+    const offset = (page - 1) * limit;
+
+    const whereClause = {};
+    if (userID) {
+      whereClause.userID = userID;
+    }
+
+    const orders = await OrdersItem.findAll({
+      where: {userID: req.userID},
+      include: [
+        {
+          model: Users,
+          attributes: ["id", "fullName", "email"],
+        }
       ],
       order: [[sortBy, order]],
       limit: parseInt(limit),
@@ -177,4 +234,5 @@ module.exports = {
   getOrders,
   getOrderById,
   deleteOrder,
+  getMyOrders
 };

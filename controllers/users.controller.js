@@ -221,10 +221,11 @@ async function verifyOtpPhone(req, res) {
 
 async function findAll(req, res) {
   try {
-    let { role } = req.user;
-    role = Array.isArray(role) ? role : [role];
-
-    if (role.includes("Admin")) {
+    // let role = req.header("Authorization")?.split(" ")[1];
+    // role = Array.isArray(role) ? role : [role];
+    console.log(req.userRole);
+    
+    if (["Admin"].includes(req.userRole)) {
       let findAllUsers = await Users.findAll({
         attributes: [
           "id",
@@ -309,8 +310,8 @@ async function findOne(req, res) {
       ],
       include: [
         {
-          model: Region,
-          as: "region",
+          model: Regions,
+          as: "Region",
           attributes: ["id", "name"],
         },
       ],
