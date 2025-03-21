@@ -9,8 +9,6 @@ async function getAll(req, res) {
       });
       res.send(categories);
       return;
-    } else {
-      res.send(`${req.query.name} not found`);
     }
     const category = await Category.findAll();
     res.send(category);

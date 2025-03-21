@@ -80,7 +80,7 @@ const UsersRouter = express.Router();
 
 /**
  * @swagger
- * /users/register:
+ * /api/users/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Users]
@@ -104,7 +104,7 @@ UsersRouter.post("/verify-otp-phone", verifyOtpPhone); // documentyatiyaga qoshi
 
 /**
  * @swagger
- * /users/verify-otp:
+ * /api/users/verify-otp:
  *   post:
  *     summary: Verify OTP for user activation
  *     tags: [Users]
@@ -129,7 +129,7 @@ UsersRouter.post("/verify-otp", verifyOtp);
 
 /**
  * @swagger
- * /users/login:
+ * /api/users/login:
  *   post:
  *     summary: Login a user
  *     tags: [Users]
@@ -154,7 +154,7 @@ UsersRouter.post("/login", login);
 
 /**
  * @swagger
- * /users/get-access-token:
+ * /api/users/get-access-token:
  *   post:
  *     summary: Get a new access token using refresh token
  *     tags: [Users]
@@ -168,7 +168,7 @@ UsersRouter.post("/get-access-token", getNewAccessToken);
 
 /**
  * @swagger
- * /users/promoteToAdmin/{id}:
+ * /api/users/promoteToAdmin/{id}:
  *   patch:
  *     summary: Promote a user to admin
  *     security:
@@ -193,7 +193,7 @@ UsersRouter.patch(
 
 /**
  * @swagger
- * /users:
+ * /api/users:
  *   get:
  *     summary: Get all users
  *     security:
@@ -212,7 +212,7 @@ UsersRouter.get(
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/users/{id}:
  *   get:
  *     summary: Get a user by ID
  *     security:
@@ -239,7 +239,7 @@ UsersRouter.get(
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/users/{id}:
  *   patch:
  *     summary: Update a user
  *     security:
@@ -270,7 +270,7 @@ UsersRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update);
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/users/{id}:
  *   delete:
  *     summary: Delete a user
  *     security:

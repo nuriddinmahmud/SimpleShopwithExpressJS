@@ -15,7 +15,7 @@ const ordersItemRouter = express.Router();
 
 /**
  * @swagger
- * /orders-items:
+ * /api/orders-items:
  *   post:
  *     summary: Create a new order item
  *     security:
@@ -49,7 +49,7 @@ ordersItemRouter.post(
 
 /**
  * @swagger
- * /orders-items:
+ * /api/orders-items:
  *   get:
  *     summary: Get all order items
  *     tags: [Orders Items]
@@ -67,7 +67,7 @@ ordersItemRouter.get("/", getAll);
 
 /**
  * @swagger
- * /orders-items/{id}:
+ * /api/orders-items/{id}:
  *   get:
  *     summary: Get an order item by ID
  *     tags: [Orders Items]
@@ -87,7 +87,7 @@ ordersItemRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /orders-items/{id}:
+ * /api/orders-items/{id}:
  *   patch:
  *     summary: Update an order item
  *     security:
@@ -118,7 +118,7 @@ ordersItemRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
 /**
  * @swagger
- * /orders-items/{id}:
+ * /api/orders-items/{id}:
  *   delete:
  *     summary: Delete an order item
  *     security:

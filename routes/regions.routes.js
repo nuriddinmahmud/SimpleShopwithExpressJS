@@ -15,7 +15,7 @@ const RegionRouter = express.Router();
 
 /**
  * @swagger
- * /regions:
+ * /api/regions:
  *   post:
  *     summary: Create a new region
  *     security:
@@ -45,7 +45,7 @@ RegionRouter.post(
 
 /**
  * @swagger
- * /regions:
+ * /api/regions:
  *   get:
  *     summary: Get all regions
  *     tags: [Regions]
@@ -73,7 +73,7 @@ RegionRouter.get("/", getAll);
 
 /**
  * @swagger
- * /regions/{id}:
+ * /api/regions/{id}:
  *   get:
  *     summary: Get a region by ID
  *     tags: [Regions]
@@ -93,7 +93,7 @@ RegionRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /regions/{id}:
+ * /api/regions/{id}:
  *   patch:
  *     summary: Update a region
  *     security:
@@ -124,7 +124,7 @@ RegionRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
 /**
  * @swagger
- * /regions/{id}:
+ * /api/regions/{id}:
  *   delete:
  *     summary: Delete a region
  *     security:

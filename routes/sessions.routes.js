@@ -11,7 +11,7 @@ const SessionRouter = express.Router();
 
 /**
  * @swagger
- * /sessions:
+ * /api/sessions:
  *   post:
  *     summary: Create a new session
  *     security:
@@ -36,7 +36,7 @@ SessionRouter.post("/", verifyToken, createSession);
 
 /**
  * @swagger
- * /sessions/me:
+ * /api/sessions/me:
  *   get:
  *     summary: Get the latest user session
  *     security:
@@ -52,7 +52,7 @@ SessionRouter.get("/me", verifyToken, getUserSession);
 
 /**
  * @swagger
- * /sessions/delete:
+ * /api/sessions/delete:
  *   delete:
  *     summary: Delete the latest user session
  *     security:

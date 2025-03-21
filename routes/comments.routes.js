@@ -15,7 +15,7 @@ const CommentRouter = express.Router();
 
 /**
  * @swagger
- * /comments:
+ * /api/comments:
  *   post:
  *     summary: Create a new comment
  *     security:
@@ -49,7 +49,7 @@ CommentRouter.post(
 
 /**
  * @swagger
- * /comments:
+ * /api/comments:
  *   get:
  *     summary: Get all comments
  *     tags: [Comments]
@@ -77,7 +77,7 @@ CommentRouter.get("/", getAll);
 
 /**
  * @swagger
- * /comments/{id}:
+ * /api/comments/{id}:
  *   get:
  *     summary: Get a comment by ID
  *     tags: [Comments]
@@ -97,7 +97,7 @@ CommentRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /comments/{id}:
+ * /api/comments/{id}:
  *   patch:
  *     summary: Update a comment
  *     security:
@@ -128,7 +128,7 @@ CommentRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
 /**
  * @swagger
- * /comments/{id}:
+ * /api/comments/{id}:
  *   delete:
  *     summary: Delete a comment
  *     security:

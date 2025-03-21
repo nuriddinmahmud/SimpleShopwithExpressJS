@@ -15,7 +15,7 @@ const ProductRouter = express.Router();
 
 /**
  * @swagger
- * /products:
+ * /api/products:
  *   post:
  *     summary: Create a new product
  *     security:
@@ -49,7 +49,7 @@ ProductRouter.post(
 
 /**
  * @swagger
- * /products:
+ * /api/products:
  *   get:
  *     summary: Get all products
  *     tags: [Products]
@@ -77,7 +77,7 @@ ProductRouter.get("/", getAll);
 
 /**
  * @swagger
- * /products/{id}:
+ * /api/products/{id}:
  *   get:
  *     summary: Get a product by ID
  *     tags: [Products]
@@ -97,7 +97,7 @@ ProductRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /products/{id}:
+ * /api/products/{id}:
  *   patch:
  *     summary: Update a product
  *     security:
@@ -128,7 +128,7 @@ ProductRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
 /**
  * @swagger
- * /products/{id}:
+ * /api/products/{id}:
  *   delete:
  *     summary: Delete a product
  *     security:

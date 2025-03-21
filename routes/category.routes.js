@@ -15,7 +15,7 @@ const CategoryRouter = express.Router();
 
 /**
  * @swagger
- * /categories:
+ * /api/category:
  *   post:
  *     summary: Create a new category
  *     security:
@@ -45,7 +45,7 @@ CategoryRouter.post(
 
 /**
  * @swagger
- * /categories:
+ * /api/category:
  *   get:
  *     summary: Get all categories
  *     tags: [Categories]
@@ -57,7 +57,7 @@ CategoryRouter.get("/", getAll);
 
 /**
  * @swagger
- * /categories/{id}:
+ * /api/category/{id}:
  *   get:
  *     summary: Get a category by ID
  *     tags: [Categories]
@@ -77,7 +77,7 @@ CategoryRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /categories/{id}:
+ * /api/category/{id}:
  *   patch:
  *     summary: Update a category
  *     security:
@@ -108,7 +108,7 @@ CategoryRouter.patch("/:id", verifyToken, checkRole(["Admin"]), update);
 
 /**
  * @swagger
- * /categories/{id}:
+ * /api/category/{id}:
  *   delete:
  *     summary: Delete a category
  *     security:
