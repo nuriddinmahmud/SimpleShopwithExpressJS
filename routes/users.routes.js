@@ -26,6 +26,65 @@ const UsersRouter = express.Router();
 
 /**
  * @swagger
+ * /api/users/send-otp-to-phone:
+ *   post:
+ *     summary: Send OTP to user's phone
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 description: The phone number of the user
+ *     responses:
+ *       200:
+ *         description: OTP sent successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+
+UsersRouter.post("/send-otp-to-phone", sendOtpPhone);
+
+/**
+ * @swagger
+ * /api/users/verify-otp-phone:
+ *   post:
+ *     summary: Verify OTP sent to user's phone
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 description: The phone number of the user
+ *               otp:
+ *                 type: string
+ *                 description: The OTP sent to the user's phone
+ *     responses:
+ *       200:
+ *         description: Account activated successfully
+ *       403:
+ *         description: OTP is incorrect
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+
+UsersRouter.post("/verify-otp-phone", verifyOtpPhone);
+
+/**
+ * @swagger
  * /api/users/register:
  *   post:
  *     summary: Register a new user
@@ -223,6 +282,8 @@ UsersRouter.patch("/promoteToAdmin/:id", promoteToAdmin);
  * /api/users:
  *   get:
  *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: List of users
@@ -238,7 +299,7 @@ UsersRouter.patch("/promoteToAdmin/:id", promoteToAdmin);
  *         description: Internal server error
  */
 
-UsersRouter.get("/", findAll);
+UsersRouter.get("/", verifyToken, selfPolice(["Admin"]), findAll);
 
 /**
  * @swagger
@@ -246,6 +307,8 @@ UsersRouter.get("/", findAll);
  *   get:
  *     summary: Get a user by ID
  *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -266,7 +329,7 @@ UsersRouter.get("/", findAll);
  *         description: Internal server error
  */
 
-UsersRouter.get("/:id", findOne);
+UsersRouter.get("/:id", verifyToken, selfPolice(["Admin"]), findOne);
 
 /**
  * @swagger
@@ -364,65 +427,6 @@ UsersRouter.patch(
  */
 
 UsersRouter.delete("/:id", verifyToken, selfPolice(["Admin"]), remove);
-
-/**
- * @swagger
- * /api/users/send-otp-phone:
- *   post:
- *     summary: Send OTP to user's phone
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               phone:
- *                 type: string
- *                 description: The phone number of the user
- *     responses:
- *       200:
- *         description: OTP sent successfully
- *       404:
- *         description: User not found
- *       500:
- *         description: Internal server error
- */
-
-UsersRouter.post("/send-otp-phone", sendOtpPhone);
-
-/**
- * @swagger
- * /api/users/verify-otp-phone:
- *   post:
- *     summary: Verify OTP sent to user's phone
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               phone:
- *                 type: string
- *                 description: The phone number of the user
- *               otp:
- *                 type: string
- *                 description: The OTP sent to the user's phone
- *     responses:
- *       200:
- *         description: Account activated successfully
- *       403:
- *         description: OTP is incorrect
- *       404:
- *         description: User not found
- *       500:
- *         description: Internal server error
- */
-
-UsersRouter.post("/verify-otp-phone", verifyOtpPhone);
 
 /**
  * @swagger
