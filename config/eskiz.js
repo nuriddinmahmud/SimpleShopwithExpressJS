@@ -14,7 +14,7 @@ async function sendSms(tel) {
     const otp = totp.generate(tel + process.env.ESKIZ_KEY || "eskizSecret");
     await api.post("/message/sms/send", {
       mobile_phone: tel,
-      message: "Bu eskiz dan test",
+      message: "Bu eskiz dan test ",
     });
     console.log(otp);
     return otp;
