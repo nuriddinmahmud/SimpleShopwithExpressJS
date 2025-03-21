@@ -115,10 +115,22 @@ UsersRouter.post("/verify-otp-phone", verifyOtpPhone); // documentyatiyaga qoshi
  *           schema:
  *             type: object
  *             properties:
+ *               fullName:
+ *                 type: string
  *               email:
  *                 type: string
- *               otp:
+ *               phone:
  *                 type: string
+ *               role:
+ *                 type: string
+ *               regionID:
+ *                 type: integer
+ *               password:
+ *                 type: string
+ *               avatar:
+ *                 type: string
+ *               yearOfBirth:
+ *                 type: integer
  *     responses:
  *       200:
  *         description: User activated successfully
