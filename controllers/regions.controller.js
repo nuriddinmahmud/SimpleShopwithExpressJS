@@ -23,7 +23,7 @@ const getAll = async (req, res) => {
     let whereClause = {};
 
     if (search) {
-      whereClause.name = { [Op.iLike]: `%${search}%` };
+      whereClause.name = { [Op.like]: `%${search}%` };
     }
 
     const pageSize = limit ? parseInt(limit) : 10;

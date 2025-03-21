@@ -1,19 +1,4 @@
 const Session = require("../models/sessions.model.js");
-const {
-  sessionsValidation,
-} = require("../validations/sessions.validation.js");
-
-const createSession = async (req, res) => {
-  try {
-    const { error, value } = sessionsValidation(req.body);
-    if (error) return res.status(422).send({ error: error.details[0].message });
-
-    const newSession = await Session.create(value);
-    res.status(200).send({ data: newSession });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
 
 const getUserSession = async (req, res) => {
   try {
@@ -22,11 +7,12 @@ const getUserSession = async (req, res) => {
       order: [["createdAt", "DESC"]],
     });
     if (!session) {
-      return res.status(404).json({ message: "Session not found" });
+      return res.status(404).send("Session not found!");
     }
-    res.status(200).json({ data: session });
-  } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.send(session);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
@@ -37,13 +23,14 @@ const deleteUserSession = async (req, res) => {
       order: [["createdAt", "DESC"]],
     });
     if (!session) {
-      return res.status(404).json({ message: "Session not found" });
+      return res.status(404).send("Session not found!");
     }
     await session.destroy();
-    res.status(200).json({ message: "Session deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.send("Session deleted successfully!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
-module.exports = { createSession, getUserSession, deleteUserSession };
+module.exports = { getUserSession, deleteUserSession };

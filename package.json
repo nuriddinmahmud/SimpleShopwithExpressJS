@@ -4,7 +4,7 @@
   "type": "commonjs",
   "main": "main.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon main.js",
     "dev": "node --watch main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

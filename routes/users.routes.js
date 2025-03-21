@@ -26,6 +26,61 @@ const UsersRouter = express.Router();
 
 /**
  * @swagger
+ * /api/users/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *                 description: The full name of the user
+ *               yearOfBirth:
+ *                 type: integer
+ *                 description: The year of birth of the user
+ *               email:
+ *                 type: string
+ *                 description: The email of the user
+ *               password:
+ *                 type: string
+ *                 description: The password of the user
+ *               phone:
+ *                 type: string
+ *                 description: The phone number of the user
+ *               role:
+ *                 type: string
+ *                 enum: [Admin, User, Seller, SuperAdmin]
+ *                 description: The role of the user (default is "User")
+ *               avatar:
+ *                 type: string
+ *                 description: The avatar URL of the user
+ *               regionID:
+ *                 type: integer
+ *                 description: The ID of the region the user belongs to
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request. Validation error
+ *       405:
+ *         description: Account already exists
+ *       500:
+ *         description: Internal server error
+ */
+
+UsersRouter.post("/register", register);
+
+/**
+ * @swagger
  * /api/users/send-otp-to-phone:
  *   post:
  *     summary: Send OTP to user's phone
@@ -82,61 +137,6 @@ UsersRouter.post("/send-otp-to-phone", sendOtpPhone);
  */
 
 UsersRouter.post("/verify-otp-phone", verifyOtpPhone);
-
-/**
- * @swagger
- * /api/users/register:
- *   post:
- *     summary: Register a new user
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               fullName:
- *                 type: string
- *                 description: The full name of the user
- *               yearOfBirth:
- *                 type: integer
- *                 description: The year of birth of the user
- *               email:
- *                 type: string
- *                 description: The email of the user
- *               password:
- *                 type: string
- *                 description: The password of the user
- *               phone:
- *                 type: string
- *                 description: The phone number of the user
- *               role:
- *                 type: string
- *                 enum: [Admin, User, Seller, SuperAdmin]
- *                 description: The role of the user (default is "User")
- *               avatar:
- *                 type: string
- *                 description: The avatar URL of the user
- *               regionID:
- *                 type: integer
- *                 description: The ID of the region the user belongs to
- *     responses:
- *       200:
- *         description: User registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       400:
- *         description: Bad request. Validation error
- *       405:
- *         description: Account already exists
- *       500:
- *         description: Internal server error
- */
-
-UsersRouter.post("/register", register);
 
 /**
  * @swagger

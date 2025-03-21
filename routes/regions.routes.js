@@ -9,7 +9,6 @@ const {
 
 const verifyToken = require("../middleware/verifyToken");
 const checkRole = require("../middleware/rolePolice");
-const selfPolice = require("../middleware/selfPolice");
 
 const RegionRouter = express.Router();
 
@@ -48,10 +47,12 @@ const RegionRouter = express.Router();
  *         description: Internal server error
  */
 
-RegionRouter.post("/",
+RegionRouter.post(
+  "/",
   // verifyToken,
   // selfPolice(["Admin"]),
-  create);
+  create
+);
 
 /**
  * @swagger

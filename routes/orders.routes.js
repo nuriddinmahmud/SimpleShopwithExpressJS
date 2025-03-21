@@ -5,7 +5,7 @@ const {
   getOrderById,
   deleteOrder,
   updateOrder,
-  getMyOrders
+  getMyOrders,
 } = require("../controllers/orders.controller");
 
 const verifyToken = require("../middleware/verifyToken");
@@ -219,8 +219,6 @@ OrderRouter.post("/", verifyToken, checkRole(["Admin"]), createOrder);
  *       500:
  *         description: Server xatosi
  */
-
-
 
 OrderRouter.get("/my-orders", verifyToken, checkRole(["Admin"]), getMyOrders);
 

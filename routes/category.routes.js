@@ -50,7 +50,6 @@ const CategoryRouter = express.Router();
  *       500:
  *         description: Internal server error
  */
-
 CategoryRouter.post("/", verifyToken, selfPolice(["Admin"]), post);
 
 /**
@@ -92,7 +91,6 @@ CategoryRouter.post("/", verifyToken, selfPolice(["Admin"]), post);
  *       500:
  *         description: Internal server error
  */
-
 CategoryRouter.get("/", getAll);
 
 /**
@@ -120,7 +118,6 @@ CategoryRouter.get("/", getAll);
  *       500:
  *         description: Internal server error
  */
-
 CategoryRouter.get("/:id", getOne);
 
 /**
@@ -169,7 +166,6 @@ CategoryRouter.get("/:id", getOne);
  *       500:
  *         description: Internal server error
  */
-
 CategoryRouter.patch(
   "/:id",
   verifyToken,
@@ -204,7 +200,6 @@ CategoryRouter.patch(
  *       500:
  *         description: Internal server error
  */
-
 CategoryRouter.delete("/:id", verifyToken, checkRole(["Admin"]), remove);
 
 /**

@@ -7,12 +7,11 @@ const {
 const nodemailer = require("nodemailer");
 const { totp } = require("otplib");
 const bcrypt = require("bcrypt");
-const fs = require("fs");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
-const path = require("path");
 const sendSms = require("../config/eskiz.js");
+const Session = require("../models/sessions.model.js");
 
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
@@ -93,7 +92,12 @@ async function login(req, res) {
     const { email, password } = req.body;
     let user = await Users.findOne({ where: { email } });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      return res.status(422).send({ message: "Invalid email or password ❗" });
+    }
+
+    let match = await bcrypt.compare(password, user.password);
+    if (!match) {
       return res.status(422).send({ message: "Invalid email or password ❗" });
     }
 
@@ -103,26 +107,61 @@ async function login(req, res) {
       });
     }
 
-    let accessToken = await accessTokenGenereate({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const sessionData = {
+      userId: user.id,
+      ipAddress: req.ip,
+      deviceInfo: req.headers["user-agent"],
+    };
 
-    let refreshToken = await refreshTokenGenereate({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    console.log("Session data:", sessionData);
+
+    try {
+      console.log("🔹 Session yaratishdan oldin:", sessionData);
+      let newSession = await Session.create(sessionData);
+      console.log("✅ Session yaratildi:", newSession);
+    } catch (err) {
+      console.error("❌ Session yaratishda xatolik:", err);
+      return res
+        .status(500)
+        .send({ message: "Session yaratishda xatolik ❗", error: err.message });
+    }
+
+    let accessToken = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        ipAddress: req.ip,
+        deviceInfo: req.headers["user-agent"],
+      },
+      "access_secret",
+      { expiresIn: "15m" }
+    );
+
+    let refreshToken = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        ipAddress: req.ip,
+        deviceInfo: req.headers["user-agent"],
+      },
+      "refresh_secret",
+      { expiresIn: "7d" }
+    );
+
     res.status(200).send({
       message: "Logged in successfully",
       access_token: accessToken,
       refresh_token: refreshToken,
     });
   } catch (error) {
+    console.error("Login xatosi:", error);
     res.status(400).send({ error_message: error.message });
   }
 }
+
+module.exports = { login };
 
 async function accessTokenGenereate(payload) {
   try {
@@ -221,10 +260,6 @@ async function verifyOtpPhone(req, res) {
 
 async function findAll(req, res) {
   try {
-    // let role = req.header("Authorization")?.split(" ")[1];
-    // role = Array.isArray(role) ? role : [role];
-    console.log(req.userRole);
-    
     if (["Admin"].includes(req.userRole)) {
       let findAllUsers = await Users.findAll({
         attributes: [
@@ -368,6 +403,7 @@ async function remove(req, res) {
     res.status(400).send({ error_message: e.message });
   }
 }
+
 module.exports = {
   register,
   verifyOtp,
@@ -380,4 +416,5 @@ module.exports = {
   getNewAccessToken,
   sendOtpPhone,
   verifyOtpPhone,
+  refreshTokenGenereate,
 };
