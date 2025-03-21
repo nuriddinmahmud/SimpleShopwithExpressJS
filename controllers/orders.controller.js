@@ -111,18 +111,18 @@ const getMyOrders = async (req, res) => {
     } = req.query;
     const offset = (page - 1) * limit;
 
-    const whereClause = {};
-    if (userID) {
-      whereClause.userID = userID;
-    }
+    const whereClause = {userID: req.userID};
 
-    const orders = await OrdersItem.findAll({
-      where: {userID: req.userID},
+    const orders = await Orders.findAll({
+      where: whereClause,
       include: [
         {
           model: Users,
           attributes: ["id", "fullName", "email"],
-        }
+        },
+        {
+          model: OrdersItem,
+        },
       ],
       order: [[sortBy, order]],
       limit: parseInt(limit),
