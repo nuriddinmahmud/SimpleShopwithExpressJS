@@ -15,16 +15,6 @@ const RegionRouter = express.Router();
 
 /**
  * @swagger
-<<<<<<< HEAD
- * tags:
- *   name: Regions
- *   description: API for managing regions
- */
-
-/**
- * @swagger
-=======
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  * /api/regions:
  *   post:
  *     summary: Create a new region

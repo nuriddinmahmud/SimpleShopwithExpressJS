@@ -15,16 +15,6 @@ const ProductRouter = express.Router();
 
 /**
  * @swagger
-<<<<<<< HEAD
- * tags:
- *   name: Products
- *   description: API for managing products
- */
-
-/**
- * @swagger
-=======
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  * /api/products:
  *   post:
  *     summary: Create a new product

@@ -15,18 +15,7 @@ const ordersItemRouter = express.Router();
 
 /**
  * @swagger
-<<<<<<< HEAD
- * tags:
- *   name: OrdersItem
- *   description: Order Items management
- */
-
-/**
- * @swagger
- * /api/ordersItem:
-=======
  * /api/orders-items:
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  *   post:
  *     summary: Create a new order with multiple items
  *     tags: [OrdersItem]
@@ -54,11 +43,7 @@ ordersItemRouter.post("/", verifyToken, selfPolice(["Admin"]), createOrder);
 
 /**
  * @swagger
-<<<<<<< HEAD
- * /api/ordersItem:
-=======
  * /api/orders-items:
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  *   get:
  *     summary: Get all orders
  *     tags: [OrdersItem]
@@ -101,11 +86,7 @@ ordersItemRouter.get("/", getOrders);
 
 /**
  * @swagger
-<<<<<<< HEAD
- * /api/ordersItem/{id}:
-=======
  * /api/orders-items/{id}:
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  *   get:
  *     summary: Get a specific order by ID
  *     tags: [OrdersItem]
@@ -127,11 +108,7 @@ ordersItemRouter.get("/:id", getOrderById);
 
 /**
  * @swagger
-<<<<<<< HEAD
- * /api/ordersItem/{id}:
-=======
  * /api/orders-items/{id}:
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  *   patch:
  *     summary: Update an order
  *     tags: [OrdersItem]
@@ -178,11 +155,7 @@ ordersItemRouter.patch(
 
 /**
  * @swagger
-<<<<<<< HEAD
- * /aoi/ordersItem/{id}:
-=======
  * /api/orders-items/{id}:
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  *   delete:
  *     summary: Delete an order
  *     tags: [OrdersItem]

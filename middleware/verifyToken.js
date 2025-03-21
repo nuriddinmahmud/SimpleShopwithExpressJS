@@ -6,13 +6,13 @@ const verifyToken = (req, res, next) => {
     return res.status(401).json({ error_message: "Invalid token format!" });
   }
 
-  const token = authHeader.split(" ")[1]; 
+  const token = authHeader.split(" ")[1];
 
-  jwt.verify(token,  (err, user) => {
+  jwt.verify(token, "accessKey", (err, user) => {
     if (err) {
       return res.status(403).json({ error_message: "Invalid token!" });
     }
-    req.user = user; 
+    req.user = user;
     next();
   });
 };

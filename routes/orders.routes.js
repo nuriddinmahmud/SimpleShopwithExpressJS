@@ -14,11 +14,6 @@ const OrderRouter = express.Router();
 
 /**
  * @swagger
-<<<<<<< HEAD
- * tags:
- *   name: Orders
- *   description: Buyurtmalarni boshqarish
-=======
  * /api/orders:
  *   get:
  *     summary: Get all orders
@@ -32,16 +27,11 @@ const OrderRouter = express.Router();
  *     responses:
  *       200:
  *         description: List of all orders
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  */
 
 /**
  * @swagger
-<<<<<<< HEAD
- * /api/orders:
-=======
  * /api/orders/{id}:
->>>>>>> 51bcae8c7fd3e910da6261a85ca88062f4ff935f
  *   get:
  *     summary: Barcha buyurtmalarni olish (filtr, sort, pagination)
  *     tags: [Orders]
